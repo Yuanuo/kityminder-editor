@@ -1,5 +1,5 @@
 angular.module('kityminderEditor')
-	.directive('fontOperator', function() {
+	.directive('fontOperator', ['$filter', function($filter) {
 		return {
 			restrict: 'E',
 			templateUrl: 'ui/directive/fontOperator/fontOperator.html',
@@ -67,6 +67,8 @@ angular.module('kityminderEditor')
 
                 scope.foreColor = scope.setDefaultColor() || '#000';
 
+                scope.lang = $filter('lang');
+
                 scope.getFontfamilyName = function(val) {
                     var fontName = '';
                     scope.fontFamilyList.forEach(function(ele, idx, arr) {
@@ -80,4 +82,4 @@ angular.module('kityminderEditor')
                 }
 			}
 		}
-	});
+	}]);

@@ -10,6 +10,7 @@ define(function(require, exports, module) {
     var Minder = require('../minder');
 
     function MinderRuntime() {
+        var lang = this.lang.t;
 
         // 不使用 kityminder 的按键处理，由 ReceiverRuntime 统一处理
         var minder = new Minder({
@@ -21,7 +22,7 @@ define(function(require, exports, module) {
         minder.renderTo(this.selector);
         minder.setTheme(null);
         minder.select(minder.getRoot(), true);
-        minder.execCommand('text', '中心主题');
+        minder.execCommand('text', lang('maintopic', 'runtime/minder'));
 
         // 导出给其它 Runtime 使用
         this.minder = minder;

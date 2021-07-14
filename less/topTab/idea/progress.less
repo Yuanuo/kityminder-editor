@@ -2,6 +2,7 @@
     .progress-sprite(@count - 1);
     &.progress-@{count} {
         background-position: 0 (-20px * (@count - 1));
+        background-size: 20px;
     }
 }
 
@@ -21,6 +22,7 @@
             .progress-sprite(9);
             background: url(images/iconprogress.png) repeat-y;
             background-color: transparent;
+            background-size: 25px;
         }
     }
 }

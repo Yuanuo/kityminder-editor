@@ -1,87 +1,152 @@
 KityMinder Editor
-==========
+=================
 
-## 简介
+--> [Chinese version](README-zh.md)
 
-KityMinder Editor 是一款强大、简洁、体验优秀的脑图编辑工具，适合用于编辑树/图/网等结构的数据。
+## Introduction
 
-编辑器由百度 [FEX](https://github.com/fex-team) 基于 [kityminder-core](https://github.com/fex-team/kityminder-core) 搭建，并且在[百度脑图](http://naotu.baidu.com)中使用。
+KityMinder Editor is a powerful, concise, and excellent mind map editing tool 
+for editing data in structures such as trees/maps/nets.
 
-他们的区别与联系如下：
+The editor is built by Baidu [FEX](https://github.com/fex-team) based on 
+[kityminder-core](https://github.com/fex-team/kityminder-core) and in 
+[Baidu Brain Figure](http://naotu.baidu.com) used.
 
-![KityMinder 联系](relations.png "KityMinder 联系")
+Their differences and connections are as follows:
 
-- [kityminder-core](https://github.com/fex-team/kityminder-core) 是 kityminder 的核心部分，基于百度 [FEX](https://github.com/fex-team) 开发的矢量图形库 [kity](https://github.com/fex-team/kity)。包含了脑图数据的可视化展现，简单编辑功能等所有底层支持。
-- [kityminder-editor](https://github.com/fex-team/kityminder-editor) 基于 kityminder-core 搭建，依赖于 AngularJS，包含 UI 和热盒 [hotbox](https://github.com/fex-team/hotbox) 等方便用户输入的功能，简单来说，就是一款编辑器。
-- [百度脑图](http://naotu.baidu.com) 基于 kityminder-editor，加入了第三方格式导入导出 (FreeMind, XMind, MindManager) 、文件储存、用户认证、文件分享、历史版本等业务逻辑。
+![KityMinder Contact](relations.png "KityMinder Contact")
 
-## 功能
+- [kityminder-core](https://github.com/fex-team/kityminder-core) is the core 
+  part of kityminder, based on Baidu [FEX](https://github.com/fex-team) Graphics
+  library [kity](https://github.com/fex-team/kity). It includes all the
+  underlying support for visual representation of mind map data, simple
+  editing functions.
+- [kityminder-editor](https://github.com/fex-team/kityminder-editor) Built on
+  kityminder-core, relying on AngularJS, including UI and hotbox
+  [hotbox](https://github.com/ Fex-team/hotbox) is a function that is easy for
+  users to input. Simply put, it is an editor.
+- [Baidu mind map](http://naotu.baidu.com) Based on kityminder-editor, it has
+  added third-party format import and export (FreeMind, XMind, MindManager), file
+  storage, user authentication, file sharing, historical version, etc. logic.
 
-- 基本操作：文本编辑，节点折叠、插入、删除、排序、归纳、复制、剪切、粘贴等
-- 样式控制：字体、加粗、斜体、颜色、样式拷贝、样式粘贴等
-- 图标：优先级、进度等
-- 历史：撤销/重做
-- 标签：多标签贴入
-- 备注：支持 Markdown 格式备注
-- 图片：支持本地/网络/搜索图片插入
-- 超链接：支持 HTTP/HTTPS/MAIL/FTP 链接插入
-- 布局：支持多种布局切换
-- 主题：支持多种主题切换
-- 数据导入导出：支持多种格式的导入，多种格式（包括图片）的导出
-- 缩略图：支持缩略图查看/导航
+## Features
 
-## 开发使用
-根目录下的 `index.html` 为开发环境，`dist` 目录下的 `index.html` 使用打包好的代码，适用于线上环境。
+<<<<<<< .mine
+## ����ʹ��
+��Ŀ¼�µ� `index.html` Ϊ����������`dist` Ŀ¼�µ� `index.html` ʹ�ô���õĴ��룬���������ϻ�����
 
-1. 安装 [nodejs](http://nodejs.org) 和 [npm](https://docs.npmjs.com/getting-started/installing-node)
-2. 初始化：切到 kityminder-editor 根目录下运行 `npm run init`
-3. 在 kityminder-editor 根目录下运行 `grunt dev` 即可启动项目
-4. 你可以基于根目录的 `index.html` 开发，或者查看 `dist` 目录下用于生产环境的 `index.html`，Enjoy it!
 
-另外，kityminder-editor 还提供了 bower 包，方便开发者直接使用。你可以在需要用到 kityminder-editor 的工程目录下
-运行 `bower install kityminder-editor`，接着手动引入 kityminder-editor 所依赖的 css 和 js 文件，具体文件见
-`dist` 目录下的 `index.html`，推荐使用 npm 包 [wireDep](https://www.npmjs.com/package/wiredep) 自动进行，
-可参考根目录下 `Gruntfile.js`。
 
-## 构建
-运行 `grunt build`，完成后 `dist` 目录里就是可用运行的 kityminder-editor, 双击 `index.html` 即可打开运行示例
 
-## 初始化配置
-用户可以根据需要，配置 `kityminder-editor`, 具体使用方法如下：
+
+
+
+
+
+
+
+
+=======
+- Basic operations: text editing, node folding, inserting, deleting, sorting,
+  inducting, copying, cutting, pasting, etc.
+- Style control: font, bold, italic, color, style copy, style paste, etc.
+- Icon: priority, progress, etc.
+- History: Undo / Redo
+- Tags: Multi-label stickers
+- Note: Support Markdown format comments
+- Image: Support local/network/search image insertion
+- Hyperlink: Support for HTTP/HTTPS/MAIL/FTP link insertion
+- Layout: Support multiple layout switches
+- Topic: Support for multiple theme switching
+- Data import and export: support import of multiple formats, export of
+  multiple formats (including images)
+- Thumbnail: Support for thumbnail viewing/navigation
+>>>>>>> .theirs
+
+<<<<<<< .mine
+1. ��װ [nodejs](http://nodejs.org) �� [npm](https://docs.npmjs.com/getting-started/installing-node)
+2. ��ʼ�����е� kityminder-editor ��Ŀ¼������ `npm run init`
+3. �� kityminder-editor ��Ŀ¼������ `grunt dev` ����������Ŀ
+4. ����Ի��ڸ�Ŀ¼�� `index.html` ���������߲鿴 `dist` Ŀ¼���������������� `index.html`��Enjoy it!
+=======
+## Development and Use
+The `index.html` in the root directory is the development environment, and the
+`index.html` in the `dist` directory uses the packaged code for the online
+environment.
+>>>>>>> .theirs
+
+1. Install [nodejs](http://nodejs.org) and [npm](https://docs.npmjs.com/getting-started/installing-node)
+2. Initialize: Cut to the kityminder-editor root directory to run `npm run init`
+3. Run `grunt dev` in the kityminder-editor root directory to start the project.
+4. You can develop based on the `index.html` of the root directory, or view the
+`index.html` for the production environment in the `dist` directory, Enjoy it!
+
+<<<<<<< .mine
+## ����
+���� `grunt build`����ɺ� `dist` Ŀ¼����ǿ������е� kityminder-editor, ˫�� `index.html` ���ɴ�����ʾ��
+
+
+
+
+
+=======
+In addition, kityminder-editor also provides a bower package for developers to
+use directly. You can use the kityminder-editor project directory.
+Run `bower install kityminder-editor`, then manually import the css and js files
+that kityminder-editor depends on. See the specific file `index.html` in the
+`dist` directory, it is recommended to use the npm package
+[wireDep](https://www.npmjs.com/package/wiredep) to do it automatically.
+See the `Gruntfile.js` in the root directory.
+>>>>>>> .theirs
+
+## Construct
+Run `grunt build`. After the completion, the `dist` directory is the
+kityminder-editor that can be run. Double-click `index.html` to open the
+running example.
+
+## Initial configuration
+Users can configure `kityminder-editor` as needed. The specific usage is as
+follows:
 ```
 angular.module('kityminderDemo', ['kityminderEditor'])
     .config(function (configProvider) {
-        configProvider.set('imageUpload', 'path/to/image/upload/handler');
+        configProvider.set('lang', 'en');
     });
 
 ```
 
-## 数据导入导出
-由于 kityminder-editor 是基于 kityminder-core 搭建的，而 kityminder-core 内置了五种常见
-格式的导入或导出，在创建编辑器实例之后，可以使用四个接口进行数据的导入导出。
+## Data import and export
+Since kityminder-editor is built on kityminder-core, kityminder-core has five
+common built-in import or export formats, after creating the editor instance,
+you can use four interfaces to import and export data.
 
-* `editor.minder.exportJson()` - 导出脑图数据为 JSON 对象
-* `editor.minder.importJson(json)` - 导入 JSON 对象为当前脑图数据
-* `editor.minder.exportData(protocol, option)` - 导出脑图数据为指定的数据格式，返回一个 Promise，其值为导出的结果
-* `editor.minder.importData(protocol, data, option)` - 导入指定格式的数据为脑图数据，返回一个 Promise，其值为转换之后的脑图 Json 数据
+* `editor.minder.exportJson()` - Export mind map data to JSON objects
+* `editor.minder.importJson(json)` - Import JSON object as current mind map data
+* `editor.minder.exportData(protocol, option)` - Export mind map data to the
+  specified data format, return a promise whose value is the result of the export
+* `editor.minder.importData(protocol, data, option)` - Imports data in the
+  specified format as mind map data, returns a promise whose value is the mind
+  map after conversion Json data
 
-目前支持的数据格式包括：
+Currently supported data formats include:
 
-* `json` - JSON 字符串，支持导入和导出
-* `text` - 纯文本格式，支持导入和导出
-* `markdown` - Markdown 格式，支持导入和导出
-* `svg` - SVG 矢量格式，仅支持导出
-* `png` - PNG 位图格式，仅支持导出
+* `json` - JSON string, support for import and export
+* `text` - plain text format, support for import and export
+* `markdown` - Markdown format, support for import and export
+* `svg` - SVG vector format, only supports export
+* `png` - PNG bitmap format, only supports export
 
-更多格式的支持，可以加载 [kityminder-protocol](https://github.com/fex-team/kityminder-protocol) 来扩展第三方格式支持。
+For more format support, you can load
+[kityminder-protocol](https://github.com/fex-team/kityminder-protocol) to extend
+third-party format support.
 
-数据格式的具体信息，可参考 [kityminder-core-wiki 的中的说明](https://github.com/fex-team/kityminder-core/wiki)。
+For specific information on the data format, refer to the [description in kityminder-core-wiki](https://github.com/fex-team/kityminder-core/wiki).
 
-## 联系我们
-问题和建议反馈：
+## Contact us
+Questions and suggestions feedback:
 
 [Github issues](https://github.com/fex-team/kityminder-editor/issues)
 
-邮件组：kity@baidu.com
+Mail group: kity@baidu.com
 
-QQ 讨论群：475962105
+QQ discussion group: 475962105

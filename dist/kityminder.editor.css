@@ -51,7 +51,7 @@
 }
 div.minder-editor-container {
   position: absolute;
-  top: 40px;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -181,39 +181,48 @@ div.minder-editor-container {
 }
 .undo .km-btn-icon {
   background-position: 0 -1240px;
+  background-size: 25px;
 }
 .redo .km-btn-icon {
   background-position: 0 -1220px;
+  background-size: 25px;
 }
 .append-group {
-  width: 212px;
+  width: 260px;
 }
 .append-child-node .km-btn-icon {
   background-position: 0 0;
+  background-size: 25px;
 }
 .append-sibling-node .km-btn-icon {
   background-position: 0 -20px;
+  background-size: 25px;
 }
 .append-parent-node .km-btn-icon {
   background-position: 0 -40px;
+  background-size: 25px;
 }
 .arrange-group {
-  width: 64px;
+  width: 80px;
 }
 .arrange-up .km-btn-icon {
   background-position: 0 -280px;
+  background-size: 25px;
 }
 .arrange-down .km-btn-icon {
   background-position: 0 -300px;
+  background-size: 25px;
 }
 .operation-group {
-  width: 64px;
+  width: 86px;
 }
 .edit-node .km-btn-icon {
   background-position: 0 -60px;
+  background-size: 25px;
 }
 .remove-node .km-btn-icon {
   background-position: 0 -80px;
+  background-size: 25px;
 }
 .btn-group-vertical {
   vertical-align: middle;
@@ -243,6 +252,7 @@ div.minder-editor-container {
 .btn-group-vertical .hyperlink {
   height: 25px;
   background: url(images/icons.png) no-repeat center -100px;
+  background-size: 25px;
 }
 .btn-group-vertical .hyperlink-caption {
   height: 20px;
@@ -277,6 +287,7 @@ div.minder-editor-container {
 .btn-group-vertical .image-btn {
   height: 25px;
   background: url(images/icons.png) no-repeat center -125px;
+  background-size: 25px;
 }
 .btn-group-vertical .image-btn-caption {
   height: 20px;
@@ -395,6 +406,7 @@ div.minder-editor-container {
 .btn-group-vertical .note-btn {
   height: 25px;
   background: url(images/icons.png) no-repeat center -1150px;
+  background-size: 25px;
 }
 .btn-group-vertical .note-btn-caption {
   height: 20px;
@@ -663,36 +675,47 @@ div.minder-editor-container {
 .tab-content .km-priority .km-priority-item .km-priority-icon {
   background: url(images/iconpriority.png) repeat-y;
   background-color: transparent;
+  background-size: 40px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-0 {
   background-position: 0 20px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-1 {
   background-position: 0 0px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-2 {
   background-position: 0 -20px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-3 {
   background-position: 0 -40px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-4 {
   background-position: 0 -60px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-5 {
   background-position: 0 -80px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-6 {
   background-position: 0 -100px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-7 {
   background-position: 0 -120px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-8 {
   background-position: 0 -140px;
+  background-size: 20px;
 }
 .tab-content .km-priority .km-priority-item .km-priority-icon.priority-9 {
   background-position: 0 -160px;
+  background-size: 20px;
 }
 .tab-content .km-progress {
   vertical-align: middle;
@@ -709,36 +732,47 @@ div.minder-editor-container {
 .tab-content .km-progress .km-progress-item .km-progress-icon {
   background: url(images/iconprogress.png) repeat-y;
   background-color: transparent;
+  background-size: 25px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-0 {
   background-position: 0 20px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-1 {
   background-position: 0 0px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-2 {
   background-position: 0 -20px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-3 {
   background-position: 0 -40px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-4 {
   background-position: 0 -60px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-5 {
   background-position: 0 -80px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-6 {
   background-position: 0 -100px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-7 {
   background-position: 0 -120px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-8 {
   background-position: 0 -140px;
+  background-size: 20px;
 }
 .tab-content .km-progress .km-progress-item .km-progress-icon.progress-9 {
   background-position: 0 -160px;
+  background-size: 20px;
 }
 .resource-editor {
   vertical-align: middle;
@@ -839,21 +873,27 @@ div.minder-editor-container {
 }
 .temp-item.default {
   background-position: 0 0;
+  background-size: 500px;
 }
 .temp-item.structure {
   background-position: -50px 0;
+  background-size: 500px;
 }
 .temp-item.filetree {
   background-position: -100px 0;
+  background-size: 500px;
 }
 .temp-item.right {
   background-position: -150px 0;
+  background-size: 500px;
 }
 .temp-item.fish-bone {
   background-position: -200px 0;
+  background-size: 500px;
 }
 .temp-item.tianpan {
   background-position: -250px 0;
+  background-size: 500px;
 }
 .current-temp-item {
   width: 74px;
@@ -934,7 +974,7 @@ div a.theme-item {
   font-size: 12px;
 }
 .btn-wrap {
-  width: 50px;
+  width: 60px;
   height: 42px;
   cursor: pointer;
   display: inline-block;
@@ -968,6 +1008,7 @@ div a.theme-item {
 .reset-layout-icon {
   background: url(images/icons.png) no-repeat;
   background-position: 0 -150px;
+  background-size: 25px;
 }
 .style-operator {
   display: inline-block;
@@ -981,6 +1022,7 @@ div a.theme-item {
 .clear-style-icon {
   background: url(images/icons.png) no-repeat;
   background-position: 0 -175px;
+  background-size: 25px;
 }
 .s-btn-group-vertical {
   display: inline-block;
@@ -1026,6 +1068,7 @@ div a.theme-item {
 .copy-style-icon {
   background: url(images/icons.png) no-repeat;
   background-position: 0 -200px;
+  background-size: 25px;
 }
 .paste-style-wrap {
   display: block;
@@ -1033,6 +1076,7 @@ div a.theme-item {
 .paste-style-icon {
   background: url(images/icons.png) no-repeat;
   background-position: 0 -220px;
+  background-size: 25px;
 }
 .font-operator {
   width: 170px;
@@ -1083,6 +1127,7 @@ div a.theme-item {
   background: url(images/icons.png) no-repeat;
   cursor: pointer;
   margin: 0 3px;
+  background-size: 25px;
 }
 .font-bold:hover,
 .font-italics:hover {
@@ -1197,6 +1242,7 @@ div a.theme-item {
   cursor: default;
   color: #000;
   background: url(images/icons.png) no-repeat center -1260px;
+  background-size: 25px;
 }
 .bg-color-wrap .quick-bg-color:hover {
   background-color: #eff3fa;
@@ -1264,6 +1310,7 @@ div a.theme-item {
   height: 25px;
   background: url(images/icons.png) no-repeat 0 -995px;
   background-position-x: 50%;
+  background-size: 25px;
 }
 .btn-group-vertical .expand-caption {
   height: 20px;
@@ -1299,6 +1346,7 @@ div a.theme-item {
 .btn-group-vertical .select {
   height: 25px;
   background: url(images/icons.png) no-repeat 7px -1175px;
+  background-size: 25px;
 }
 .btn-group-vertical .select-caption {
   height: 20px;
@@ -1335,11 +1383,48 @@ div a.theme-item {
   height: 25px;
   background: url(images/icons.png) no-repeat 0 -345px;
   background-position-x: 50%;
+  background-size: 25px;
 }
 .btn-group-vertical .search-caption {
   height: 20px;
 }
 .btn-group-vertical .search-caption .caption {
+  font-size: 12px;
+}
+.btn-group-vertical {
+  vertical-align: middle;
+  margin: 5px;
+}
+.btn-group-vertical .export,
+.btn-group-vertical .export-caption {
+  width: 40px;
+  margin: 0;
+  padding: 0;
+  border: none!important;
+  border-radius: 0!important;
+}
+.btn-group-vertical .export:hover,
+.btn-group-vertical .export-caption:hover {
+  background-color: #eff3fa;
+}
+.btn-group-vertical .export:active,
+.btn-group-vertical .export-caption:active {
+  background-color: #c4d0ee;
+}
+.btn-group-vertical .export.active,
+.btn-group-vertical .export-caption.active {
+  box-shadow: none;
+  background-color: #eff3fa;
+}
+.btn-group-vertical .export {
+  height: 25px;
+  background: url(images/icons.png) no-repeat 0 -645px;
+  background-position-x: 50%;
+}
+.btn-group-vertical .export-caption {
+  height: 20px;
+}
+.btn-group-vertical .export-caption .caption {
   font-size: 12px;
 }
 .search-box {
@@ -1446,27 +1531,32 @@ div a.theme-item {
 }
 .nav-bar .zoom-in .icon {
   background-position: 0 -730px;
+  background-size: 25px;
 }
 .nav-bar .zoom-out .icon {
   background-position: 0 -750px;
+  background-size: 25px;
 }
 .nav-bar .hand .icon {
   background-position: 0 -770px;
   width: 25px;
   height: 25px;
   margin: 0 auto;
+  background-size: 25px;
 }
 .nav-bar .camera .icon {
   background-position: 0 -870px;
   width: 25px;
   height: 25px;
   margin: 0 auto;
+  background-size: 25px;
 }
 .nav-bar .nav-trigger .icon {
   background-position: 0 -845px;
   width: 25px;
   height: 25px;
   margin: 0 auto;
+  background-size: 25px;
 }
 .nav-bar .zoom-pan {
   width: 2px;

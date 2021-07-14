@@ -11,6 +11,6 @@
     </textarea>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()" ng-disabled="type === 'import' && value == ''">OK</button>
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="ok()" ng-disabled="type === 'import' && value == ''">{{ 'ok' | lang: 'ui/dialog/exportnode'}}</button>
+    <button class="btn btn-warning" ng-click="cancel()">{{ 'cancel' | lang: 'ui/dialog/exportnode'}}</button>
 </div>

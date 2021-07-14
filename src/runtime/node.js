@@ -5,17 +5,18 @@ define(function(require, exports, module) {
         var minder = this.minder;
         var hotbox = this.hotbox;
         var fsm = this.fsm;
+        var lang = this.lang.t;
 
         var main = hotbox.state('main');
 
         var buttons = [
-            '前移:Alt+Up:ArrangeUp',
-            '下级:Tab|Insert:AppendChildNode',
-            '同级:Enter:AppendSiblingNode',
-            '后移:Alt+Down:ArrangeDown',
-            '删除:Delete|Backspace:RemoveNode',
-            '上级:Shift+Tab|Shift+Insert:AppendParentNode'
-            //'全选:Ctrl+A:SelectAll'
+            lang('arrangeup', 'runtime/node') + ':Alt+Up:ArrangeUp',
+            lang('appendchildnode', 'runtime/node') + ':Tab|Insert:AppendChildNode',
+            lang('appendsiblingnode', 'runtime/node') + ':Enter:AppendSiblingNode',
+            lang('arrangedown', 'runtime/node') + ':Alt+Down:ArrangeDown',
+            lang('removenode', 'runtime/node') + ':Delete|Backspace:RemoveNode',
+            lang('appendparentnode', 'runtime/node') + ':Shift+Tab|Shift+Insert:AppendParentNode'
+            //lang('selectall', 'runtime/node') + ':Ctrl+A:SelectAll'
         ];
 
         var AppendLock = 0;
@@ -32,7 +33,7 @@ define(function(require, exports, module) {
                 action: function() {
                     if (command.indexOf('Append') === 0) {
                         AppendLock++;
-                        minder.execCommand(command, '分支主题');
+                        minder.execCommand(command, lang('topic', 'runtime/node'));
 
                         // provide in input runtime
                         function afterAppend () {
@@ -55,7 +56,7 @@ define(function(require, exports, module) {
 
         main.button({
             position: 'bottom',
-            label: '导入节点',
+            label: lang('importnode', 'runtime/node'),
             key: 'Alt + V',
             enable: function() {
                 var selectedNodes = minder.getSelectedNodes();
@@ -67,7 +68,7 @@ define(function(require, exports, module) {
 
         main.button({
             position: 'bottom',
-            label: '导出节点',
+            label: lang('exportnode', 'runtime/node'),
             key: 'Alt + C',
             enable: function() {
                 var selectedNodes = minder.getSelectedNodes();

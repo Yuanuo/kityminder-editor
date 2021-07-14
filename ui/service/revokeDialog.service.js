@@ -1,4 +1,4 @@
-angular.module('kityminderEditor').service('revokeDialog', ['$modal', 'minder.service', function($modal, minderService) {
+angular.module('kityminderEditor').service('revokeDialog', ['$uibModal', 'minder.service', function($modal, minderService) {
 
     minderService.registerEvent(function() {
 

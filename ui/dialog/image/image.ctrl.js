@@ -1,18 +1,55 @@
 angular.module('kityminderEditor')
-    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', 'server', function($http, $scope, $modalInstance, image, server) {
+    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', '$filter', function($http, $scope, $modalInstance, image, $filter) {
+        $scope.lang = $filter('lang');
 
         $scope.data = {
             list: [],
             url: image.url || '',
             title: image.title || '',
-            R_URL: /^https?\:\/\/\w+/
+            R_URL: /^(http|https|data)?\:/
         };
 
         setTimeout(function() {
             var $imageUrl = $('#image-url');
             $imageUrl.focus();
             $imageUrl[0].setSelectionRange(0, $scope.data.url.length);
+
+            // add event listener
+            document.getElementById('paste-image').addEventListener('paste', function(e) {
+
+                var cbd = e.clipboardData;
+                var ua = window.navigator.userAgent;
+
+                if ( !(e.clipboardData && e.clipboardData.items) ) return;
+                if(cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+                    cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
+                    ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) return;
+
+                for(var i = 0; i < cbd.items.length; i++) {
+                    var item = cbd.items[i];
+                    if(item.kind == "file"){
+                        var blob = item.getAsFile();
+                        if (blob.size === 0) {
+                            return;
+                        }
+                        
+                        var fr = new FileReader();
+                        fr.onload = function (e) {
+                            $scope.data.url = e.target.result ; 
+                            $scope.$apply();
+                        }
+                        fr.readAsDataURL(blob);                          
+                    }
+                }
+            });
+
         }, 300);
+
+        $modalInstance.rendered.then(function () {
+            $('#upload-image').change(function(){
+                $scope.uploadImage();
+            });
+        });
 
 
         // 搜索图片按钮点击事件
@@ -58,14 +95,14 @@ angular.module('kityminderEditor')
             }
             if (/^.*\.(jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG)$/.test(fileInput.val())) {
                 var file = fileInput[0].files[0];
-                return server.uploadImage(file).then(function (json) {
-                    var resp = json.data;
-                    if (resp.errno === 0) {
-                        $scope.data.url = resp.data.url;
-                    }
-                });
+                var reader=new FileReader();
+                reader.onload = function() {
+                    $scope.data.url = this.result;
+                    $scope.$apply();
+                };
+                reader.readAsDataURL(file);
             } else {
-                alert("后缀只能是 jpg、gif 及 png");
+                alert(lang('formatinfo', 'ui/dialog/image'));
             }
         };
 

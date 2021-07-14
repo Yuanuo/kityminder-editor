@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder-editor - v1.0.67 - 2019-02-12
+ * kityminder-editor - v1.0.64 - 2019-02-27
  * https://github.com/fex-team/kityminder-editor
  * GitHub: https://github.com/fex-team/kityminder-editor 
  * Copyright (c) 2019 ; Licensed 
@@ -47,8 +47,12 @@ _p[0] = {
         function assemble(runtime) {
             runtimes.push(runtime);
         }
-        function KMEditor(selector) {
+        function KMEditor(selector, defaultLang) {
             this.selector = selector;
+            this.lang = _p.r(3);
+            if (defaultLang !== undefined) {
+                this.lang.setDefaultLang(defaultLang);
+            }
             for (var i = 0; i < runtimes.length; i++) {
                 if (typeof runtimes[i] == "function") {
                     runtimes[i].call(this, this);
@@ -98,7 +102,40 @@ _p[2] = {
 
 //src/lang.js
 _p[3] = {
-    value: function(require, exports, module) {}
+    value: function(require, exports, module) {
+        var langList = {
+            en: _p.r(26),
+            de: _p.r(25),
+            zh_CN: _p.r(27)
+        };
+        var defaultLang = "en";
+        function lang(text, block, lang) {
+            if (lang === undefined) {
+                lang = defaultLang;
+            }
+            var dict = langList[lang];
+            if (dict === undefined) {
+                dict = langList["en"];
+            }
+            block.split("/").forEach(function(ele, idx) {
+                dict = dict[ele];
+            });
+            if (dict === null) {
+                return text;
+            }
+            return dict[text] || text;
+        }
+        return module.exports = {
+            setDefaultLang: function(lang) {
+                if (langList[lang] !== undefined) {
+                    defaultLang = lang;
+                    return true;
+                }
+                return false;
+            },
+            t: lang
+        };
+    }
 };
 
 //src/minder.js
@@ -690,6 +727,7 @@ _p[10] = {
         function HistoryRuntime() {
             var minder = this.minder;
             var hotbox = this.hotbox;
+            var lang = this.lang.t;
             var MAX_HISTORY = 100;
             var lastSnap;
             var patchLock;
@@ -775,7 +813,7 @@ _p[10] = {
             var main = hotbox.state("main");
             main.button({
                 position: "top",
-                label: "撤销",
+                label: lang("undo", "runtime/history"),
                 key: "Ctrl + Z",
                 enable: hasUndo,
                 action: undo,
@@ -783,7 +821,7 @@ _p[10] = {
             });
             main.button({
                 position: "top",
-                label: "重做",
+                label: lang("redo", "runtime/history"),
                 key: "Ctrl + Y",
                 enable: hasRedo,
                 action: redo,
@@ -868,6 +906,7 @@ _p[12] = {
             var receiver = this.receiver;
             var receiverElement = receiver.element;
             var isGecko = window.kity.Browser.gecko;
+            var lang = this.lang.t;
             // setup everything to go
             setupReciverElement();
             setupFsm();
@@ -925,7 +964,7 @@ _p[12] = {
             function setupHotbox() {
                 hotbox.state("main").button({
                     position: "center",
-                    label: "编辑",
+                    label: lang("edit", "runtime/input"),
                     key: "F2",
                     enable: function() {
                         return minder.queryCommandState("text") != -1;
@@ -1254,7 +1293,6 @@ _p[13] = {
             var container = this.container;
             var receiverElement = receiver.element;
             var hotbox = this.hotbox;
-            var compositionLock = false;
             // normal -> *
             receiver.listen("normal", function(e) {
                 // 为了防止处理进入edit模式而丢失处理的首字母,此时receiver必须为enable
@@ -1323,15 +1361,7 @@ _p[13] = {
                     }
                 } else if (e.type == "keyup" && e.is("Esc")) {
                     e.preventDefault();
-                    if (!compositionLock) {
-                        return fsm.jump("normal", "input-cancel");
-                    }
-                } else if (e.type == "compositionstart") {
-                    compositionLock = true;
-                } else if (e.type == "compositionend") {
-                    setTimeout(function() {
-                        compositionLock = false;
-                    });
+                    return fsm.jump("normal", "input-cancel");
                 }
             });
             //////////////////////////////////////////////
@@ -1396,6 +1426,7 @@ _p[14] = {
     value: function(require, exports, module) {
         var Minder = _p.r(4);
         function MinderRuntime() {
+            var lang = this.lang.t;
             // 不使用 kityminder 的按键处理，由 ReceiverRuntime 统一处理
             var minder = new Minder({
                 enableKeyReceiver: false,
@@ -1405,7 +1436,7 @@ _p[14] = {
             minder.renderTo(this.selector);
             minder.setTheme(null);
             minder.select(minder.getRoot(), true);
-            minder.execCommand("text", "中心主题");
+            minder.execCommand("text", lang("maintopic", "runtime/minder"));
             // 导出给其它 Runtime 使用
             this.minder = minder;
         }
@@ -1421,8 +1452,9 @@ _p[15] = {
             var minder = this.minder;
             var hotbox = this.hotbox;
             var fsm = this.fsm;
+            var lang = this.lang.t;
             var main = hotbox.state("main");
-            var buttons = [ "前移:Alt+Up:ArrangeUp", "下级:Tab|Insert:AppendChildNode", "同级:Enter:AppendSiblingNode", "后移:Alt+Down:ArrangeDown", "删除:Delete|Backspace:RemoveNode", "上级:Shift+Tab|Shift+Insert:AppendParentNode" ];
+            var buttons = [ lang("arrangeup", "runtime/node") + ":Alt+Up:ArrangeUp", lang("appendchildnode", "runtime/node") + ":Tab|Insert:AppendChildNode", lang("appendsiblingnode", "runtime/node") + ":Enter:AppendSiblingNode", lang("arrangedown", "runtime/node") + ":Alt+Down:ArrangeDown", lang("removenode", "runtime/node") + ":Delete|Backspace:RemoveNode", lang("appendparentnode", "runtime/node") + ":Shift+Tab|Shift+Insert:AppendParentNode" ];
             var AppendLock = 0;
             buttons.forEach(function(button) {
                 var parts = button.split(":");
@@ -1436,7 +1468,7 @@ _p[15] = {
                     action: function() {
                         if (command.indexOf("Append") === 0) {
                             AppendLock++;
-                            minder.execCommand(command, "分支主题");
+                            minder.execCommand(command, lang("topic", "runtime/node"));
                             // provide in input runtime
                             function afterAppend() {
                                 if (!--AppendLock) {
@@ -1457,7 +1489,7 @@ _p[15] = {
             });
             main.button({
                 position: "bottom",
-                label: "导入节点",
+                label: lang("importnode", "runtime/node"),
                 key: "Alt + V",
                 enable: function() {
                     var selectedNodes = minder.getSelectedNodes();
@@ -1468,7 +1500,7 @@ _p[15] = {
             });
             main.button({
                 position: "bottom",
-                label: "导出节点",
+                label: lang("exportnode", "runtime/node"),
                 key: "Alt + C",
                 enable: function() {
                     var selectedNodes = minder.getSelectedNodes();
@@ -1494,10 +1526,11 @@ _p[16] = {
         function PriorityRuntime() {
             var minder = this.minder;
             var hotbox = this.hotbox;
+            var lang = this.lang.t;
             var main = hotbox.state("main");
             main.button({
                 position: "top",
-                label: "优先级",
+                label: lang("main", "runtime/priority"),
                 key: "P",
                 next: "priority",
                 enable: function() {
@@ -1517,7 +1550,7 @@ _p[16] = {
             });
             priority.button({
                 position: "center",
-                label: "移除",
+                label: lang("remove", "runtime/priority"),
                 key: "Del",
                 action: function() {
                     minder.execCommand("Priority", 0);
@@ -1525,7 +1558,7 @@ _p[16] = {
             });
             priority.button({
                 position: "top",
-                label: "返回",
+                label: lang("esc", "runtime/priority"),
                 key: "esc",
                 next: "back"
             });
@@ -1540,10 +1573,11 @@ _p[17] = {
         function ProgressRuntime() {
             var minder = this.minder;
             var hotbox = this.hotbox;
+            var lang = this.lang.t;
             var main = hotbox.state("main");
             main.button({
                 position: "top",
-                label: "进度",
+                label: lang("main", "runtime/progress"),
                 key: "G",
                 next: "progress",
                 enable: function() {
@@ -1563,7 +1597,7 @@ _p[17] = {
             });
             progress.button({
                 position: "center",
-                label: "移除",
+                label: lang("remove", "runtime/progress"),
                 key: "Del",
                 action: function() {
                     minder.execCommand("Progress", 0);
@@ -1571,7 +1605,7 @@ _p[17] = {
             });
             progress.button({
                 position: "top",
-                label: "返回",
+                label: lang("esc", "runtime/progress"),
                 key: "esc",
                 next: "back"
             });
@@ -1608,8 +1642,6 @@ _p[18] = {
             element.setAttribute("tabindex", -1);
             element.classList.add("receiver");
             element.onkeydown = element.onkeypress = element.onkeyup = dispatchKeyEvent;
-            element.addEventListener("compositionstart", dispatchKeyEvent);
-            // element.addEventListener('compositionend', dispatchKeyEvent);
             this.container.appendChild(element);
             // receiver 对象
             var receiver = {
@@ -2054,6 +2086,678 @@ _p[24] = {
     }
 };
 
+//l10n/de.js
+_p[25] = {
+    value: function(require, exports, module) {
+        return module.exports = {
+            template: {
+                default: "Mind Map",
+                tianpan: "Tianpan Karte",
+                structure: "Organigramm",
+                filetree: "Verzeichnis-Organigramm",
+                right: "Logisches Strukturdiagramm",
+                "fish-bone": "Fischknochenfigur"
+            },
+            theme: {
+                classic: "Classic",
+                "classic-compact": "Classic Kompakt",
+                snow: "sanfte Licht",
+                "snow-compact": "Kompakt kalt",
+                fish: "Fischknochen",
+                wire: "Drahtgitter",
+                "fresh-red": "Frisches Rot",
+                "fresh-soil": "Boden gelb",
+                "fresh-green": "Literarisches Grün",
+                "fresh-blue": "Himmelblau",
+                "fresh-purple": "Romantisches Lila",
+                "fresh-pink": "Gehirnpulver",
+                "fresh-red-compat": "Kompakt rot",
+                "fresh-soil-compat": "Kompakt gelb",
+                "fresh-green-compat": "Kompaktgrün",
+                "fresh-blue-compat": "Kompakt blau",
+                "fresh-purple-compat": "Kompaktes Lila",
+                "fresh-pink-compat": "Kompaktes Pulver",
+                tianpan: "Zifferblatt",
+                "tianpan-compact": "Kompakter Tag"
+            },
+            maintopic: "Zentrierthema",
+            topic: "Branchenthema",
+            panels: {
+                history: "Verlauf",
+                template: "Vorlage",
+                theme: "Haut",
+                layout: "Layout",
+                style: "Stil",
+                font: "Text",
+                color: "Farbe",
+                background: "Hintergrund",
+                insert: "Einfügen",
+                arrange: "Anpassung",
+                nodeop: "aktuell",
+                priority: "Priorität",
+                progress: "Fortschritt",
+                resource: "Ressourcen",
+                note: "Bemerkungen",
+                attachment: "Anlage",
+                word: "Text"
+            },
+            ui: {
+                command: {
+                    appendsiblingnode: "Neuer Geschwisterknoten",
+                    appendparentnode: "Neuen Überknoten unterhalb",
+                    appendchildnode: "Neuer Unterknoten",
+                    removenode: "Löschen",
+                    editnode: "Bearbeiten",
+                    arrangeup: "Hoch",
+                    arrangedown: "Runter",
+                    resetlayout: "Layout organisieren",
+                    expandtoleaf: "Alle Knoten ausklappen",
+                    expandtolevel1: "Ausklappen bis auf Level 1 Knoten",
+                    expandtolevel2: "Ausklappen bis zu sekundären Knoten",
+                    expandtolevel3: "Ausklappen bis zu Knoten der dritten Ebene",
+                    expandtolevel4: "Ausklappen bis zu vierstufigen Knoten",
+                    expandtolevel5: "Ausklappen bis zu fünfstufigen Knoten",
+                    expandtolevel6: "Ausklappen bis zu sechsstufigen Knoten",
+                    fullscreen: "Vollbild",
+                    outline: "Gliederung"
+                },
+                search: "suchen",
+                expandtoleaf: "Erweitern",
+                back: "Zurück",
+                undo: "Rückgängig (Strg + Z)",
+                redo: "Wiederholen (Strg + Y)",
+                tabs: {
+                    idea: "Idee",
+                    appearence: "Aussehen",
+                    view: "Ansicht"
+                },
+                bold: "Fett",
+                italic: "Kursiv",
+                forecolor: "Schriftfarbe",
+                fontfamily: "Schriftart",
+                fontsize: "Schriftgröße",
+                layoutstyle: "Thema",
+                node: "Knotenoperation",
+                hand: "Ziehen erlauben",
+                camera: "Stammknoten zentrieren",
+                "zoom-in": "Vergrößern (Strg +)",
+                "zoom-out": "Verkleinern (Strg)",
+                markers: "Markierungen",
+                help: "Hilfe",
+                preference: "Einstellungen",
+                expandnode: "Auf das Blatt erweitern",
+                collapsenode: "einen Level-1-Knoten erhalten",
+                template: "Vorlage",
+                theme: "Haut",
+                clearstyle: "Stil entfernen",
+                copystyle: "Stil kopieren",
+                pastestyle: "Stil einfügen",
+                appendsiblingnode: "Gleiches Thema",
+                appendchildnode: "Untergeordnetes Thema",
+                arrangeup: "Voreinstellung",
+                arrangedown: "Nachstimmen",
+                editnode: "Bearbeiten",
+                removenode: "Entfernen",
+                priority: "Priorität",
+                progress: {
+                    p1: "Nicht begonnen",
+                    p2: "1/8 fertiggestellt",
+                    p3: "1/4 fertiggestellt",
+                    p4: "3/8 fertiggestellt",
+                    p5: "1/2 fertiggestellt",
+                    p6: "5/8 fertiggestellt",
+                    p7: "3/4 fertiggestellt",
+                    p8: "7/8 fertiggestellt",
+                    p9: "Abgeschlossen",
+                    p0: "Klarer Fortschritt"
+                },
+                resource: {
+                    add: "hinzufügen"
+                },
+                link: "Link",
+                image: "Bild",
+                note: "Notiz",
+                insertlink: "Link einfügen",
+                insertimage: "Bild einfügen",
+                insertnote: "Notiz einfügen",
+                removelink: "Bestehende Links entfernen",
+                removeimage: "Bestehendes Bild entfernen",
+                removenote: "Bestehende Notizen entfernen",
+                resetlayout: "Organisieren",
+                navigator: "Navigator",
+                selectall: "Alles auswählen",
+                selectrevert: "Auswahl umkehren",
+                selectsiblings: "Geschwisterknoten auswählen",
+                selectlevel: "Alle Knoten derselben Eben",
+                selectpath: "Pfad auswählen",
+                selecttree: "Teilbaum auswählen",
+                noteeditor: {
+                    title: "Note",
+                    hint: "Support GFM grammar",
+                    placeholder: "Please select a node to edit note"
+                },
+                dialog: {
+                    image: {
+                        title: "Image",
+                        imagesearch: "Image search",
+                        keyword: "Keyword：",
+                        placeholder: "Please input the keyword for search",
+                        baidu: "Search",
+                        linkimage: "Linked Image",
+                        linkurl: "URL：",
+                        placeholder2: "Must：start with http(s)://",
+                        imagehint: "Hint：",
+                        placeholder3: "Optional：The text that the mouse prompts when hovering over the image",
+                        preview: "Image preview：",
+                        uploadimage: "Upload Image",
+                        selectfile: "Select file...",
+                        ok: "OK",
+                        cancel: "Cancel",
+                        pasteimage: "Paste here and use the picture of the clipboard.",
+                        formatinfo: "file ext must be jpg、gif or png"
+                    },
+                    hyperlink: {
+                        title: "Link",
+                        linkurl: "Link url：",
+                        linkhint: "Hint：",
+                        placeholder: "Require：start with http(s):// or ftp://",
+                        placeholder2: "OPtional: The text that the mouse prompts when hovering over the link",
+                        ok: "OK",
+                        cancel: "Cancel"
+                    },
+                    exportnode: {
+                        title: "Export Node",
+                        ok: "OK",
+                        cancel: "Cancel"
+                    }
+                }
+            },
+            runtime: {
+                minder: {
+                    maintopic: "Main Topic"
+                },
+                node: {
+                    arrangeup: "Arrange Up",
+                    appendchildnode: "Append Child Node",
+                    appendsiblingnode: "Append Sibling Node",
+                    arrangedown: "Arrange Down",
+                    removenode: "Delete",
+                    appendparentnode: "Append Parent Node",
+                    selectall: "Select All",
+                    topic: "Topic",
+                    importnode: "Import Node",
+                    exportnode: "Export Node"
+                },
+                input: {
+                    edit: "Edit"
+                },
+                priority: {
+                    main: "Priority",
+                    remove: "Delete",
+                    esc: "Esc"
+                },
+                progress: {
+                    main: "Progress",
+                    remove: "Delete",
+                    esc: "Esc"
+                },
+                history: {
+                    undo: "Undo",
+                    redo: "Redo"
+                }
+            }
+        };
+    }
+};
+
+//l10n/en.js
+_p[26] = {
+    value: function(require, exports, module) {
+        return module.exports = {
+            template: {
+                default: "Mind map",
+                tianpan: "Sky map",
+                structure: "Organization Chart",
+                filetree: "Directory organization chart",
+                right: "logical structure diagram",
+                "fish-bone": "Fish bone figure"
+            },
+            theme: {
+                classic: "Classic",
+                "classic-compact": "Compact classic",
+                snow: "Gentle cold light",
+                "snow-compact": "Compact cold light",
+                fish: "Fish bone map",
+                wire: "Wireframe",
+                "fresh-red": "Fresh red",
+                "fresh-soil": "Dirty yellow",
+                "fresh-green": "Artistic Green",
+                "fresh-blue": "Sky Blue",
+                "fresh-purple": "Romantic Purple",
+                "fresh-pink": "Mind powder",
+                "fresh-red-compat": "Compact red",
+                "fresh-soil-compat": "Compact yellow",
+                "fresh-green-compat": "Compact green",
+                "fresh-blue-compat": "Compact blue",
+                "fresh-purple-compat": "Compact purple",
+                "fresh-pink-compat": "Compact powder",
+                tianpan: "Classic dial",
+                "tianpan-compact": "Compact day"
+            },
+            maintopic: "Center theme",
+            topic: "branch topic",
+            panels: {
+                history: "history",
+                template: "template",
+                theme: "skin",
+                layout: "layout",
+                style: "style",
+                font: "text",
+                color: "color",
+                background: "background",
+                insert: "insert",
+                arrange: "adjust",
+                nodeop: "current",
+                priority: "priority",
+                progress: "progress",
+                resource: "resource",
+                note: "note",
+                attachment: "attachment",
+                word: "text"
+            },
+            ui: {
+                command: {
+                    appendsiblingnode: "Insert sibling node",
+                    appendparentnode: "Insert parent node",
+                    appendchildnode: "Insert child node",
+                    removenode: "Delete",
+                    editnode: "Edit",
+                    arrangeup: "Up",
+                    arrangedown: "Down",
+                    resetlayout: "Reset layout",
+                    expandtoleaf: "Expand all nodes",
+                    expandtolevel1: "Expand to level 1",
+                    expandtolevel2: "Expand to level 2",
+                    expandtolevel3: "Expand to level 3",
+                    expandtolevel4: "Expand to level 4",
+                    expandtolevel5: "Expand to level 5",
+                    expandtolevel6: "Expand to level 6",
+                    fullscreen: "full screen",
+                    outline: "outline"
+                },
+                search: "Search",
+                expandtoleaf: "Expand",
+                back: "return",
+                undo: "Undo (Ctrl + Z)",
+                redo: "Redo (Ctrl + Y)",
+                tabs: {
+                    idea: "Idea",
+                    appearence: "Appearance",
+                    view: "View"
+                },
+                bold: "Bold",
+                italic: "Italic",
+                forecolor: "Font color",
+                fontfamily: "Font",
+                fontsize: "Size",
+                layoutstyle: "Theme",
+                node: "Node operation",
+                hand: "Allow dragging",
+                camera: "Locate the root node",
+                "zoom-in": "Zoom in (Ctrl+)",
+                "zoom-out": "Zoom out (Ctrl-)",
+                markers: "tag",
+                help: "Help",
+                preference: "Preferences",
+                expandnode: "Expand to leaf",
+                collapsenode: "receive a level one node",
+                template: "template",
+                theme: "skin",
+                clearstyle: "Clear style",
+                copystyle: "Copy style",
+                pastestyle: "Paste style",
+                appendsiblingnode: "same theme",
+                appendchildnode: "subordinate theme",
+                arrangeup: "pre-tune",
+                arrangedown: "post-tune",
+                editnode: "Edit",
+                removenode: "remove",
+                priority: "Priority",
+                progress: {
+                    p1: "not started",
+                    p2: "Complete 1/8",
+                    p3: "Complete 1/4",
+                    p4: "Complete 3/8",
+                    p5: "Complete half",
+                    p6: "Complete 5/8",
+                    p7: "Complete 3/4",
+                    p8: "Complete 7/8",
+                    p9: "Completed",
+                    p0: "Clear progress"
+                },
+                resource: {
+                    add: "Add"
+                },
+                link: "Link",
+                image: "Image",
+                note: "Note",
+                insertlink: "Insert link",
+                insertimage: "Insert image",
+                insertnote: "Insert note",
+                removelink: "Remove existing links",
+                removeimage: "Remove existing image",
+                removenote: "Remove existing notes",
+                resetlayout: "Organize",
+                navigator: "Navigator",
+                selectall: "Select all",
+                selectrevert: "Select revert",
+                selectsiblings: "Select siblings",
+                selectlevel: "Select level",
+                selectpath: "Select path",
+                selecttree: "Select subtree",
+                noteeditor: {
+                    title: "Note",
+                    hint: "Support GFM grammar",
+                    placeholder: "Please select a node to edit note"
+                },
+                dialog: {
+                    image: {
+                        title: "Image",
+                        imagesearch: "Image search",
+                        keyword: "Keyword：",
+                        placeholder: "Please input the keyword for search",
+                        baidu: "Search",
+                        linkimage: "Linked Image",
+                        linkurl: "URL：",
+                        placeholder2: "Require：start with http(s)://",
+                        imagehint: "Hint：",
+                        placeholder3: "Optional：The text that the mouse prompts when hovering over the image",
+                        preview: "Image preview：",
+                        uploadimage: "Upload Image",
+                        selectfile: "Select file...",
+                        ok: "OK",
+                        cancel: "Cancel",
+                        pasteimage: "Paste here and use the picture of the clipboard.",
+                        formatinfo: "file ext must be jpg、gif or png"
+                    },
+                    hyperlink: {
+                        title: "Link",
+                        linkurl: "Link url：",
+                        linkhint: "Hint：",
+                        placeholder: "Require：start with http(s):// or ftp://",
+                        placeholder2: "Optional: The text that the mouse prompts when hovering over the link",
+                        ok: "OK",
+                        cancel: "Cancel"
+                    },
+                    exportnode: {
+                        title: "Export Node",
+                        ok: "OK",
+                        cancel: "Cancel"
+                    }
+                }
+            },
+            runtime: {
+                minder: {
+                    maintopic: "Main Topic"
+                },
+                node: {
+                    arrangeup: "Arrange Up",
+                    appendchildnode: "Append Child Node",
+                    appendsiblingnode: "Append Sibling Node",
+                    arrangedown: "Arrange Down",
+                    removenode: "Delete",
+                    appendparentnode: "Append Parent Node",
+                    selectall: "Select All",
+                    topic: "Topic",
+                    importnode: "Import Node",
+                    exportnode: "Export Node"
+                },
+                input: {
+                    edit: "Edit"
+                },
+                priority: {
+                    main: "Priority",
+                    remove: "Delete",
+                    esc: "Esc"
+                },
+                progress: {
+                    main: "Progress",
+                    remove: "Delete",
+                    esc: "Esc"
+                },
+                history: {
+                    undo: "Undo",
+                    redo: "Redo"
+                }
+            }
+        };
+    }
+};
+
+//l10n/zh_CN.js
+_p[27] = {
+    value: function(require, exports, module) {
+        return module.exports = {
+            template: {
+                default: "思维导图",
+                tianpan: "天盘图",
+                structure: "组织结构图",
+                filetree: "目录组织图",
+                right: "逻辑结构图",
+                "fish-bone": "鱼骨头图"
+            },
+            theme: {
+                classic: "脑图经典",
+                "classic-compact": "紧凑经典",
+                snow: "温柔冷光",
+                "snow-compact": "紧凑冷光",
+                fish: "鱼骨图",
+                wire: "线框",
+                "fresh-red": "清新红",
+                "fresh-soil": "泥土黄",
+                "fresh-green": "文艺绿",
+                "fresh-blue": "天空蓝",
+                "fresh-purple": "浪漫紫",
+                "fresh-pink": "脑残粉",
+                "fresh-red-compat": "紧凑红",
+                "fresh-soil-compat": "紧凑黄",
+                "fresh-green-compat": "紧凑绿",
+                "fresh-blue-compat": "紧凑蓝",
+                "fresh-purple-compat": "紧凑紫",
+                "fresh-pink-compat": "紧凑粉",
+                tianpan: "经典天盘",
+                "tianpan-compact": "紧凑天盘"
+            },
+            maintopic: "中心主题",
+            topic: "分支主题",
+            panels: {
+                history: "历史",
+                template: "模板",
+                theme: "皮肤",
+                layout: "布局",
+                style: "样式",
+                font: "文字",
+                color: "颜色",
+                background: "背景",
+                insert: "插入",
+                arrange: "调整",
+                nodeop: "当前",
+                priority: "优先级",
+                progress: "进度",
+                resource: "资源",
+                note: "备注",
+                attachment: "附件",
+                word: "文字"
+            },
+            ui: {
+                command: {
+                    appendsiblingnode: "插入同级主题",
+                    appendparentnode: "插入上级主题",
+                    appendchildnode: "插入下级主题",
+                    removenode: "删除",
+                    editnode: "编辑",
+                    arrangeup: "上移",
+                    arrangedown: "下移",
+                    resetlayout: "整理布局",
+                    expandtoleaf: "展开全部节点",
+                    expandtolevel1: "展开到一级节点",
+                    expandtolevel2: "展开到二级节点",
+                    expandtolevel3: "展开到三级节点",
+                    expandtolevel4: "展开到四级节点",
+                    expandtolevel5: "展开到五级节点",
+                    expandtolevel6: "展开到六级节点",
+                    fullscreen: "全屏",
+                    outline: "大纲"
+                },
+                search: "搜索",
+                expandtoleaf: "展开",
+                back: "返回",
+                undo: "撤销 (Ctrl + Z)",
+                redo: "重做 (Ctrl + Y)",
+                tabs: {
+                    idea: "思路",
+                    appearence: "外观",
+                    view: "视图"
+                },
+                bold: "加粗",
+                italic: "斜体",
+                forecolor: "字体颜色",
+                fontfamily: "字体",
+                fontsize: "字号",
+                layoutstyle: "主题",
+                node: "节点操作",
+                hand: "允许拖拽",
+                camera: "定位根节点",
+                "zoom-in": "放大（Ctrl+）",
+                "zoom-out": "缩小（Ctrl-）",
+                markers: "标签",
+                help: "帮助",
+                preference: "偏好设置",
+                expandnode: "展开到叶子",
+                collapsenode: "收起到一级节点",
+                template: "模板",
+                theme: "皮肤",
+                clearstyle: "清除样式",
+                copystyle: "复制样式",
+                pastestyle: "粘贴样式",
+                appendsiblingnode: "同级主题",
+                appendchildnode: "下级主题",
+                arrangeup: "前调",
+                arrangedown: "后调",
+                editnode: "编辑",
+                removenode: "移除",
+                priority: "优先级",
+                progress: {
+                    p1: "未开始",
+                    p2: "完成 1/8",
+                    p3: "完成 1/4",
+                    p4: "完成 3/8",
+                    p5: "完成一半",
+                    p6: "完成 5/8",
+                    p7: "完成 3/4",
+                    p8: "完成 7/8",
+                    p9: "已完成",
+                    p0: "清除进度"
+                },
+                resource: {
+                    add: "添加"
+                },
+                link: "链接",
+                image: "图片",
+                note: "备注",
+                insertlink: "插入链接",
+                insertimage: "插入图片",
+                insertnote: "插入备注",
+                removelink: "移除已有链接",
+                removeimage: "移除已有图片",
+                removenote: "移除已有备注",
+                resetlayout: "整理",
+                navigator: "导航器",
+                selectall: "全选",
+                selectrevert: "反选",
+                selectsiblings: "选择兄弟节点",
+                selectlevel: "选择同级节点",
+                selectpath: "选择路径",
+                selecttree: "选择子树",
+                noteeditor: {
+                    title: "备注",
+                    hint: "支持 GFM 语法书写",
+                    placeholder: "请选择节点编辑备注"
+                },
+                dialog: {
+                    image: {
+                        title: "图片",
+                        imagesearch: "图片搜索",
+                        keyword: "关键词：",
+                        placeholder: "请输入搜索的关键词",
+                        baidu: "百度一下",
+                        linkimage: "外链图片",
+                        linkurl: "链接地址：",
+                        placeholder2: "必填：以 http(s):// 开头",
+                        imagehint: "提示文本：",
+                        placeholder3: "选填：鼠标在图片上悬停时提示的文本",
+                        preview: "图片预览：",
+                        uploadimage: "上传图片",
+                        selectfile: "选择文件...",
+                        ok: "确定",
+                        cancel: "取消",
+                        pasteimage: "在这里粘贴，可使用剪切板的图片。",
+                        formatinfo: "后缀只能是 jpg、gif 及 png"
+                    },
+                    hyperlink: {
+                        title: "链接",
+                        linkurl: "链接地址：",
+                        linkhint: "提示文本：",
+                        placeholder: "必填：以 http(s):// 或 ftp:// 开头",
+                        placeholder2: "选填：鼠标在链接上悬停时提示的文本",
+                        ok: "确定",
+                        cancel: "取消"
+                    },
+                    exportnode: {
+                        title: "导出节点",
+                        ok: "确定",
+                        cancel: "取消"
+                    }
+                }
+            },
+            runtime: {
+                minder: {
+                    maintopic: "中心主题"
+                },
+                node: {
+                    arrangeup: "前移",
+                    appendchildnode: "下级",
+                    appendsiblingnode: "同级",
+                    arrangedown: "后移",
+                    removenode: "删除",
+                    appendparentnode: "上级",
+                    selectall: "全选",
+                    topic: "分支主题",
+                    importnode: "导入节点",
+                    exportnode: "导出节点"
+                },
+                input: {
+                    edit: "编辑"
+                },
+                priority: {
+                    main: "优先级",
+                    remove: "移除",
+                    esc: "返回"
+                },
+                progress: {
+                    main: "进度",
+                    remove: "移除",
+                    esc: "返回"
+                },
+                history: {
+                    undo: "撤销",
+                    redo: "重做"
+                }
+            }
+        };
+    }
+};
+
 var moduleMapping = {
     "expose-editor": 1
 };
@@ -2090,7 +2794,7 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/colorPanel/colorPanel.html',
-    "<div class=\"bg-color-wrap\"><span class=\"quick-bg-color\" ng-click=\"minder.queryCommandState('background') === -1 || minder.execCommand('background', bgColor)\" ng-disabled=\"minder.queryCommandState('background') === -1\"></span> <span color-picker class=\"bg-color\" set-color=\"setDefaultBg()\" ng-disabled=\"minder.queryCommandState('background') === -1\"><span class=\"caret\"></span></span> <span class=\"bg-color-preview\" ng-style=\"{ 'background-color': bgColor }\" ng-click=\"minder.queryCommandState('background') === -1 || minder.execCommand('background', bgColor)\" ng-disabled=\"minder.queryCommandState('background') === -1\"></span></div>"
+    "<div class=\"bg-color-wrap\" title=\"{{ 'color' | lang:'panels' }}\"><span class=\"quick-bg-color\" ng-click=\"minder.queryCommandState('background') === -1 || minder.execCommand('background', bgColor)\" ng-disabled=\"minder.queryCommandState('background') === -1\"></span> <span color-picker class=\"bg-color\" set-color=\"setDefaultBg()\" ng-disabled=\"minder.queryCommandState('background') === -1\"><span class=\"caret\"></span></span> <span class=\"bg-color-preview\" ng-style=\"{ 'background-color': bgColor }\" ng-click=\"minder.queryCommandState('background') === -1 || minder.execCommand('background', bgColor)\" ng-disabled=\"minder.queryCommandState('background') === -1\"></span></div>"
   );
 
 
@@ -2100,7 +2804,7 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/fontOperator/fontOperator.html',
-    "<div class=\"font-operator\"><div class=\"dropdown font-family-list\" dropdown><div class=\"dropdown-toggle current-font-item\" dropdown-toggle ng-disabled=\"minder.queryCommandState('fontfamily') === -1\"><a href class=\"current-font-family\" title=\"{{ 'fontfamily' | lang: 'ui' }}\">{{ getFontfamilyName(minder.queryCommandValue('fontfamily')) || '字体' }}</a> <span class=\"caret\"></span></div><ul class=\"dropdown-menu font-list\"><li ng-repeat=\"f in fontFamilyList\" class=\"font-item-wrap\"><a ng-click=\"minder.execCommand('fontfamily', f.val)\" class=\"font-item\" ng-class=\"{ 'font-item-selected' : f == minder.queryCommandValue('fontfamily') }\" ng-style=\"{'font-family': f.val }\">{{ f.name }}</a></li></ul></div><div class=\"dropdown font-size-list\" dropdown><div class=\"dropdown-toggle current-font-item\" dropdown-toggle ng-disabled=\"minder.queryCommandState('fontsize') === -1\"><a href class=\"current-font-size\" title=\"{{ 'fontsize' | lang: 'ui' }}\">{{ minder.queryCommandValue('fontsize') || '字号' }}</a> <span class=\"caret\"></span></div><ul class=\"dropdown-menu font-list\"><li ng-repeat=\"f in fontSizeList\" class=\"font-item-wrap\"><a ng-click=\"minder.execCommand('fontsize', f)\" class=\"font-item\" ng-class=\"{ 'font-item-selected' : f == minder.queryCommandValue('fontsize') }\" ng-style=\"{'font-size': f + 'px'}\">{{ f }}</a></li></ul></div><span class=\"s-btn-icon font-bold\" ng-click=\"minder.queryCommandState('bold') === -1 || minder.execCommand('bold')\" ng-class=\"{'font-bold-selected' : minder.queryCommandState('bold') == 1}\" ng-disabled=\"minder.queryCommandState('bold') === -1\"></span> <span class=\"s-btn-icon font-italics\" ng-click=\"minder.queryCommandState('italic') === -1 || minder.execCommand('italic')\" ng-class=\"{'font-italics-selected' : minder.queryCommandState('italic') == 1}\" ng-disabled=\"minder.queryCommandState('italic') === -1\"></span><div class=\"font-color-wrap\"><span class=\"quick-font-color\" ng-click=\"minder.queryCommandState('forecolor') === -1 || minder.execCommand('forecolor', foreColor)\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\">A</span> <span color-picker class=\"font-color\" set-color=\"setDefaultColor()\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\"><span class=\"caret\"></span></span> <span class=\"font-color-preview\" ng-style=\"{ 'background-color': foreColor }\" ng-click=\"minder.queryCommandState('forecolor') === -1 || minder.execCommand('forecolor', foreColor)\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\"></span></div><color-panel minder=\"minder\" class=\"inline-directive\"></color-panel></div>"
+    "<div class=\"font-operator\"><div class=\"dropdown font-family-list\" dropdown><div class=\"dropdown-toggle current-font-item\" dropdown-toggle ng-disabled=\"minder.queryCommandState('fontfamily') === -1\"><a href class=\"current-font-family\" title=\"{{ 'fontfamily' | lang: 'ui' }}\">{{ getFontfamilyName(minder.queryCommandValue('fontfamily')) || lang('fontfamily', 'ui') }}</a> <span class=\"caret\"></span></div><ul class=\"dropdown-menu font-list\"><li ng-repeat=\"f in fontFamilyList\" class=\"font-item-wrap\"><a ng-click=\"minder.execCommand('fontfamily', f.val)\" class=\"font-item\" ng-class=\"{ 'font-item-selected' : f == minder.queryCommandValue('fontfamily') }\" ng-style=\"{'font-family': f.val }\">{{ f.name }}</a></li></ul></div><div class=\"dropdown font-size-list\" dropdown><div class=\"dropdown-toggle current-font-item\" dropdown-toggle ng-disabled=\"minder.queryCommandState('fontsize') === -1\"><a href class=\"current-font-size\" title=\"{{ 'fontsize' | lang: 'ui' }}\">{{ minder.queryCommandValue('fontsize') || lang('fontsize', 'ui') }}</a> <span class=\"caret\"></span></div><ul class=\"dropdown-menu font-list\"><li ng-repeat=\"f in fontSizeList\" class=\"font-item-wrap\"><a ng-click=\"minder.execCommand('fontsize', f)\" class=\"font-item\" ng-class=\"{ 'font-item-selected' : f == minder.queryCommandValue('fontsize') }\" ng-style=\"{'font-size': f + 'px'}\">{{ f }}</a></li></ul></div><span class=\"s-btn-icon font-bold\" title=\"{{ 'bold' | lang: 'ui' }}\" ng-click=\"minder.queryCommandState('bold') === -1 || minder.execCommand('bold')\" ng-class=\"{'font-bold-selected' : minder.queryCommandState('bold') == 1}\" ng-disabled=\"minder.queryCommandState('bold') === -1\"></span> <span class=\"s-btn-icon font-italics\" title=\"{{ 'italic' | lang: 'ui' }}\" ng-click=\"minder.queryCommandState('italic') === -1 || minder.execCommand('italic')\" ng-class=\"{'font-italics-selected' : minder.queryCommandState('italic') == 1}\" ng-disabled=\"minder.queryCommandState('italic') === -1\"></span><div class=\"font-color-wrap\" title=\"{{ 'forecolor' | lang: 'ui'}}\"><span class=\"quick-font-color\" ng-click=\"minder.queryCommandState('forecolor') === -1 || minder.execCommand('forecolor', foreColor)\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\">A</span> <span color-picker class=\"font-color\" set-color=\"setDefaultColor()\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\"><span class=\"caret\"></span></span> <span class=\"font-color-preview\" ng-style=\"{ 'background-color': foreColor }\" ng-click=\"minder.queryCommandState('forecolor') === -1 || minder.execCommand('forecolor', foreColor)\" ng-disabled=\"minder.queryCommandState('forecolor') === -1\"></span></div><color-panel minder=\"minder\" class=\"inline-directive\"></color-panel></div>"
   );
 
 
@@ -2130,9 +2834,12 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/navigator/navigator.html',
-    "<div class=\"nav-bar\"><div class=\"nav-btn zoom-in\" ng-click=\"minder.execCommand('zoomIn')\" title=\"{{ 'zoom-in' | lang : 'ui' }}\" ng-class=\"{ 'active' : getZoomRadio(zoom) == 0 }\"><div class=\"icon\"></div></div><div class=\"zoom-pan\"><div class=\"origin\" ng-style=\"{'transform': 'translate(0, ' + getHeight(100) + 'px)'}\" ng-click=\"minder.execCommand('zoom', 100);\"></div><div class=\"indicator\" ng-style=\"{\n" +
-    "             'transform': 'translate(0, ' + getHeight(zoom) + 'px)',\n" +
-    "             'transition': 'transform 200ms'\n" +
+    "<div class=\"nav-bar\"><div class=\"nav-btn zoom-in\" ng-click=\"minder.execCommand('zoomIn')\" title=\"{{ 'zoom-in' | lang : 'ui' }}\" ng-class=\"{ 'active' : getZoomRadio(zoom) == 0 }\"><div class=\"icon\"></div></div><div class=\"zoom-pan\"><div class=\"origin\" ng-style=\"{'transform': 'translate(0, ' + getHeight(100) + 'px)'}\" ng-click=\"minder.execCommand('zoom', 100);\"></div><div class=\"indicator\" ng-style=\"{\r" +
+    "\n" +
+    "             'transform': 'translate(0, ' + getHeight(zoom) + 'px)',\r" +
+    "\n" +
+    "             'transition': 'transform 200ms'\r" +
+    "\n" +
     "             }\"></div></div><div class=\"nav-btn zoom-out\" ng-click=\"minder.execCommand('zoomOut')\" title=\"{{ 'zoom-out' | lang : 'ui' }}\" ng-class=\"{ 'active' : getZoomRadio(zoom) == 1 }\"><div class=\"icon\"></div></div><div class=\"nav-btn hand\" ng-click=\"minder.execCommand('hand')\" title=\"{{ 'hand' | lang : 'ui' }}\" ng-class=\"{ 'active' : minder.queryCommandState('hand') == 1 }\"><div class=\"icon\"></div></div><div class=\"nav-btn camera\" ng-click=\"minder.execCommand('camera', minder.getRoot(), 600);\" title=\"{{ 'camera' | lang : 'ui' }}\"><div class=\"icon\"></div></div><div class=\"nav-btn nav-trigger\" ng-class=\"{'active' : isNavOpen}\" ng-click=\"toggleNavOpen()\" title=\"{{ 'navigator' | lang : 'ui' }}\"><div class=\"icon\"></div></div></div><div class=\"nav-previewer\" ng-show=\"isNavOpen\"></div>"
   );
 
@@ -2143,14 +2850,21 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/noteEditor/noteEditor.html',
-    "<div class=\"panel panel-default\" ng-init=\"noteEditorOpen = false\" ng-show=\"noteEditorOpen\"><div class=\"panel-heading\"><h3 class=\"panel-title\">备注</h3><span>（<a class=\"help\" href=\"https://www.zybuluo.com/techird/note/46064\" target=\"_blank\">支持 GFM 语法书写</a>）</span> <i class=\"close-note-editor glyphicon glyphicon-remove\" ng-click=\"closeNoteEditor()\"></i></div><div class=\"panel-body\"><div ng-show=\"noteEnabled\" ui-codemirror=\"{ onLoad: codemirrorLoaded }\" ng-model=\"noteContent\" ui-codemirror-opts=\"{\n" +
-    "                gfm: true,\n" +
-    "                breaks: true,\n" +
-    "                lineWrapping : true,\n" +
-    "                mode: 'gfm',\n" +
-    "                dragDrop: false,\n" +
-    "                lineNumbers:true\n" +
-    "             }\"></div><p ng-show=\"!noteEnabled\" class=\"km-note-tips\">请选择节点编辑备注</p></div></div>"
+    "<div class=\"panel panel-default\" ng-init=\"noteEditorOpen = false\" ng-show=\"noteEditorOpen\"><div class=\"panel-heading\"><h3 class=\"panel-title\">{{ 'title' | lang: 'ui/noteeditor' }}</h3><span>（<a class=\"help\" href=\"https://www.zybuluo.com/techird/note/46064\" target=\"_blank\">{{ 'hint' | lang: 'ui/noteeditor' }}</a>）</span> <i class=\"close-note-editor glyphicon glyphicon-remove\" ng-click=\"closeNoteEditor()\"></i></div><div class=\"panel-body\"><div ng-show=\"noteEnabled\" ui-codemirror=\"{ onLoad: codemirrorLoaded }\" ng-model=\"noteContent\" ui-codemirror-opts=\"{\r" +
+    "\n" +
+    "                gfm: true,\r" +
+    "\n" +
+    "                breaks: true,\r" +
+    "\n" +
+    "                lineWrapping : true,\r" +
+    "\n" +
+    "                mode: 'gfm',\r" +
+    "\n" +
+    "                dragDrop: false,\r" +
+    "\n" +
+    "                lineNumbers:true\r" +
+    "\n" +
+    "             }\"></div><p ng-show=\"!noteEnabled\" class=\"km-note-tips\">{{ 'placeholder' | lang: 'ui/noteeditor' }}</p></div></div>"
   );
 
 
@@ -2175,7 +2889,7 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/resourceEditor/resourceEditor.html',
-    "<div class=\"resource-editor\"><div class=\"input-group\"><input class=\"form-control\" type=\"text\" ng-model=\"newResourceName\" ng-required ng-keypress=\"$event.keyCode == 13 && addResource(newResourceName)\" ng-disabled=\"!enabled\"> <span class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"addResource(newResourceName)\" ng-disabled=\"!enabled\">添加</button></span></div><div class=\"resource-dropdown clearfix\" id=\"resource-dropdown\"><ul class=\"km-resource\" ng-init=\"resourceListOpen = false\" ng-class=\"{'open': resourceListOpen}\"><li ng-repeat=\"resource in used\" ng-disabled=\"!enabled\" ng-blur=\"blurCB()\"><label style=\"background: {{resourceColor(resource.name)}}\"><input type=\"checkbox\" ng-model=\"resource.selected\" ng-disabled=\"!enabled\"> <span>{{resource.name}}</span></label></li></ul><div class=\"resource-caret\" click-anywhere-but-here=\"resourceListOpen = false\" is-active=\"resourceListOpen\" ng-click=\"resourceListOpen = !resourceListOpen\"><span class=\"caret\"></span></div></div></div>"
+    "<div class=\"resource-editor\"><div class=\"input-group\"><input class=\"form-control\" type=\"text\" ng-model=\"newResourceName\" ng-required ng-keypress=\"$event.keyCode == 13 && addResource(newResourceName)\" ng-disabled=\"!enabled\"> <span class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"addResource(newResourceName)\" ng-disabled=\"!enabled\">{{ 'add' | lang: 'ui/resource'; }}</button></span></div><div class=\"resource-dropdown clearfix\" id=\"resource-dropdown\"><ul class=\"km-resource\" ng-init=\"resourceListOpen = false\" ng-class=\"{'open': resourceListOpen}\"><li ng-repeat=\"resource in used\" ng-disabled=\"!enabled\" ng-blur=\"blurCB()\"><label style=\"background: {{resourceColor(resource.name)}}\"><input type=\"checkbox\" ng-model=\"resource.selected\" ng-disabled=\"!enabled\"> <span>{{resource.name}}</span></label></li></ul><div class=\"resource-caret\" click-anywhere-but-here=\"resourceListOpen = false\" is-active=\"resourceListOpen\" ng-click=\"resourceListOpen = !resourceListOpen\"><span class=\"caret\"></span></div></div></div>"
   );
 
 
@@ -2210,7 +2924,7 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/topTab/topTab.html',
-    "<tabset><tab heading=\"{{ 'idea' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('idea')\" select=\"setCurTab('idea')\"><undo-redo editor=\"editor\"></undo-redo><append-node minder=\"minder\"></append-node><arrange minder=\"minder\"></arrange><operation minder=\"minder\"></operation><hyper-link minder=\"minder\"></hyper-link><image-btn minder=\"minder\"></image-btn><note-btn minder=\"minder\"></note-btn><priority-editor minder=\"minder\"></priority-editor><progress-editor minder=\"minder\"></progress-editor><resource-editor minder=\"minder\"></resource-editor></tab><tab heading=\"{{ 'appearence' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('appearance')\" select=\"setCurTab('appearance')\"><template-list minder=\"minder\" class=\"inline-directive\"></template-list><theme-list minder=\"minder\"></theme-list><layout minder=\"minder\" class=\"inline-directive\"></layout><style-operator minder=\"minder\" class=\"inline-directive\"></style-operator><font-operator minder=\"minder\" class=\"inline-directive\"></font-operator></tab><tab heading=\"{{ 'view' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('view')\" select=\"setCurTab('view')\"><expand-level minder=\"minder\"></expand-level><select-all minder=\"minder\"></select-all><search-btn minder=\"minder\"></search-btn></tab></tabset>"
+    "<uib-tabset><uib-tab active=\"true\" heading=\"{{ 'idea' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('idea')\" select=\"setCurTab('idea')\"><undo-redo editor=\"editor\"></undo-redo><append-node minder=\"minder\"></append-node><arrange minder=\"minder\"></arrange><operation minder=\"minder\"></operation><hyper-link minder=\"minder\"></hyper-link><image-btn minder=\"minder\"></image-btn><note-btn minder=\"minder\"></note-btn><priority-editor minder=\"minder\"></priority-editor><progress-editor minder=\"minder\"></progress-editor><resource-editor minder=\"minder\"></resource-editor></uib-tab><uib-tab heading=\"{{ 'appearence' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('appearance')\" select=\"setCurTab('appearance')\"><template-list minder=\"minder\" class=\"inline-directive\"></template-list><theme-list minder=\"minder\"></theme-list><layout minder=\"minder\" class=\"inline-directive\"></layout><style-operator minder=\"minder\" class=\"inline-directive\"></style-operator><font-operator minder=\"minder\" class=\"inline-directive\"></font-operator></uib-tab><uib-tab heading=\"{{ 'view' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('view')\" select=\"setCurTab('view')\"><expand-level minder=\"minder\"></expand-level><select-all minder=\"minder\"></select-all><search-btn minder=\"minder\"></search-btn></uib-tab></uib-tabset>"
   );
 
 
@@ -2220,18 +2934,19 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/dialog/hyperlink/hyperlink.tpl.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">链接</h3></div><div class=\"modal-body\"><form><div class=\"form-group\" id=\"link-url-wrap\" ng-class=\"{true: 'has-success', false: 'has-error'}[urlPassed]\"><label for=\"link-url\">链接地址：</label><input type=\"text\" class=\"form-control\" ng-model=\"url\" ng-blur=\"urlPassed = R_URL.test(url)\" ng-focus=\"this.value = url\" ng-keydown=\"shortCut($event)\" id=\"link-url\" placeholder=\"必填：以 http(s):// 或 ftp:// 开头\"></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"link-title\">提示文本：</label><input type=\"text\" class=\"form-control\" ng-model=\"title\" ng-blur=\"titlePassed = true\" id=\"link-title\" placeholder=\"选填：鼠标在链接上悬停时提示的文本\"></div></form></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\">确定</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">取消</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{ 'title' | lang: 'ui/dialog/hyperlink'}}</h3></div><div class=\"modal-body\"><form><div class=\"form-group\" id=\"link-url-wrap\" ng-class=\"{true: 'has-success', false: 'has-error'}[urlPassed]\"><label for=\"link-url\">{{ 'linkurl' | lang: 'ui/dialog/hyperlink'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"url\" ng-blur=\"urlPassed = R_URL.test(url)\" ng-focus=\"this.value = url\" ng-keydown=\"shortCut($event)\" id=\"link-url\" placeholder=\"{{ 'placeholder' | lang: 'ui/dialog/hyperlink'}}\"></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"link-title\">{{ 'linkhint' | lang: 'ui/dialog/hyperlink'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"title\" ng-blur=\"titlePassed = true\" id=\"link-title\" placeholder=\"{{ 'placeholder2' | lang: 'ui/dialog/hyperlink'}}\"></div></form></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\">{{ 'ok' | lang: 'ui/dialog/hyperlink'}}</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">{{ 'cancel' | lang: 'ui/dialog/hyperlink'}}</button></div>"
   );
 
 
   $templateCache.put('ui/dialog/imExportNode/imExportNode.tpl.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{ title }}</h3></div><div class=\"modal-body\"><textarea type=\"text\" class=\"form-control single-input\" rows=\"8\" ng-keydown=\"shortCut($event);\" ng-model=\"value\" ng-readonly=\"type === 'export'\">\n" +
-    "    </textarea></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\" ng-disabled=\"type === 'import' && value == ''\">OK</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{ title }}</h3></div><div class=\"modal-body\"><textarea type=\"text\" class=\"form-control single-input\" rows=\"8\" ng-keydown=\"shortCut($event);\" ng-model=\"value\" ng-readonly=\"type === 'export'\">\r" +
+    "\n" +
+    "    </textarea></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\" ng-disabled=\"type === 'import' && value == ''\">{{ 'ok' | lang: 'ui/dialog/exportnode'}}</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">{{ 'cancel' | lang: 'ui/dialog/exportnode'}}</button></div>"
   );
 
 
   $templateCache.put('ui/dialog/image/image.tpl.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">图片</h3></div><div class=\"modal-body\"><tabset><tab heading=\"图片搜索\"><form class=\"form-inline\"><div class=\"form-group\"><label for=\"search-keyword\">关键词：</label><input type=\"text\" class=\"form-control\" ng-model=\"data.searchKeyword2\" id=\"search-keyword\" placeholder=\"请输入搜索的关键词\"></div><button class=\"btn btn-primary\" ng-click=\"searchImage()\">百度一下</button></form><div class=\"search-result\" id=\"search-result\"><ul><li ng-repeat=\"image in list\" id=\"{{ 'img-item' + $index }}\" ng-class=\"{'selected' : isSelected}\" ng-click=\"selectImage($event)\"><img id=\"{{ 'img-' + $index }}\" ng-src=\"{{ image.src || '' }}\" alt=\"{{ image.title }}\" onerror=\"this.parentNode.removeChild(this)\"> <span>{{ image.title }}</span></li></ul></div></tab><tab heading=\"外链图片\"><form><div class=\"form-group\" ng-class=\"{true: 'has-success', false: 'has-error'}[urlPassed]\"><label for=\"image-url\">链接地址：</label><input type=\"text\" class=\"form-control\" ng-model=\"data.url\" ng-blur=\"urlPassed = data.R_URL.test(data.url)\" ng-focus=\"this.value = data.url\" ng-keydown=\"shortCut($event)\" id=\"image-url\" placeholder=\"必填：以 http(s):// 开头\"></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"image-title\">提示文本：</label><input type=\"text\" class=\"form-control\" ng-model=\"data.title\" ng-blur=\"titlePassed = true\" id=\"image-title\" placeholder=\"选填：鼠标在图片上悬停时提示的文本\"></div><div class=\"form-group\"><label for=\"image-preview\">图片预览：</label><img class=\"image-preview\" id=\"image-preview\" ng-src=\"{{ data.url }}\" alt=\"{{ data.title }}\"></div></form></tab><tab heading=\"上传图片\" active=\"true\"><form><div class=\"form-group\"><input type=\"file\" name=\"upload-image\" id=\"upload-image\" class=\"upload-image\" accept=\".jpg,.JPG,jpeg,JPEG,.png,.PNG,.gif,.GIF\" onchange=\"angular.element(this).scope().uploadImage()\"><label for=\"upload-image\" class=\"btn btn-primary\"><span>选择文件&hellip;</span></label></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"image-title\">提示文本：</label><input type=\"text\" class=\"form-control\" ng-model=\"data.title\" ng-blur=\"titlePassed = true\" id=\"image-title\" placeholder=\"选填：鼠标在图片上悬停时提示的文本\"></div><div class=\"form-group\"><label for=\"image-preview\">图片预览：</label><img class=\"image-preview\" id=\"image-preview\" ng-src=\"{{ data.url }}\" title=\"{{ data.title }}\" alt=\"{{ data.title }}\"></div></form></tab></tabset></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\">确定</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">取消</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{ 'title' | lang: 'ui/dialog/image'}}</h3></div><div class=\"modal-body\"><tabset><tab heading=\"{{ 'imagesearch' | lang: 'ui/dialog/image'}}\"><form class=\"form-inline\"><div class=\"form-group\"><label for=\"search-keyword\">{{ 'keyword' | lang: 'ui/dialog/image'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"data.searchKeyword2\" id=\"search-keyword\" placeholder=\"{{ 'placeholder' | lang: 'ui/dialog/image'}}\"></div><button class=\"btn btn-primary\" ng-click=\"searchImage()\">{{ 'baidu' | lang: 'ui/dialog/image'}}</button></form><div class=\"search-result\" id=\"search-result\"><ul><li ng-repeat=\"image in list\" id=\"{{ 'img-item' + $index }}\" ng-class=\"{'selected' : isSelected}\" ng-click=\"selectImage($event)\"><img id=\"{{ 'img-' + $index }}\" ng-src=\"{{ image.src || '' }}\" alt=\"{{ image.title }}\" onerror=\"this.parentNode.removeChild(this)\"> <span>{{ image.title }}</span></li></ul></div></tab><tab heading=\"{{ 'linkimage' | lang: 'ui/dialog/image'}}\"><form><div class=\"form-group\" ng-class=\"{true: 'has-success', false: 'has-error'}[urlPassed]\"><label for=\"image-url\">{{ 'linkurl' | lang: 'ui/dialog/image'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"data.url\" ng-blur=\"urlPassed = data.R_URL.test(data.url)\" ng-focus=\"this.value = data.url\" ng-keydown=\"shortCut($event)\" id=\"image-url\" placeholder=\"{{ 'placeholder2' | lang: 'ui/dialog/image'}}\"></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"image-title\">{{ 'imagehint' | lang: 'ui/dialog/image'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"data.title\" ng-blur=\"titlePassed = true\" placeholder=\"{{ 'placeholder3' | lang: 'ui/dialog/image'}}\"></div><div class=\"form-group\"><label for=\"image-preview\">{{ 'preview' | lang: 'ui/dialog/image'}}</label><img class=\"image-preview\" ng-src=\"{{ data.url }}\" alt=\"{{ data.title }}\"></div></form></tab><tab heading=\"{{ 'uploadimage' | lang: 'ui/dialog/image'}}\" active=\"true\"><form><div class=\"form-group\"><input type=\"file\" name=\"upload-image\" id=\"upload-image\" class=\"upload-image\" accept=\".jpg,.JPG,jpeg,JPEG,.png,.PNG,.gif,.GIF\"><label for=\"upload-image\" class=\"btn btn-primary\"><span>{{ 'selectfile' | lang: 'ui/dialog/image'}}</span></label><input id=\"paste-image\" type=\"text\" placeholder=\"{{ 'pasteimage' | lang: 'ui/dialog/image'}}\" style=\"width: 300px\" maxlength=\"0\"></div><div class=\"form-group\" ng-class=\"{'has-success' : titlePassed}\"><label for=\"image-title\">{{ 'imagehint' | lang: 'ui/dialog/image'}}</label><input type=\"text\" class=\"form-control\" ng-model=\"data.title\" ng-blur=\"titlePassed = true\" placeholder=\"{{ 'placeholder3' | lang: 'ui/dialog/image'}}\"></div><div class=\"form-group\"><label for=\"image-preview\">{{ 'preview' | lang: 'ui/dialog/image'}}</label><img class=\"image-preview\" ng-src=\"{{ data.url }}\" title=\"{{ data.title }}\" alt=\"{{ data.title }}\"></div></form></tab></tabset></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\">{{ 'ok' | lang: 'ui/dialog/image'}}</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">{{ 'cancel' | lang: 'ui/dialog/image'}}</button></div>"
   );
 
 }]);
@@ -2262,13 +2977,10 @@ angular.module('kityminderEditor')
 			dividerWidth: 3,
 
 			// 默认语言
-			defaultLang: 'zh-cn',
+			lang: 'zh_CN',
 
 			// 放大缩小比例
 			zoom: [10, 20, 30, 50, 80, 100, 120, 150, 200],
-
-            // 图片上传接口
-            imageUpload: 'server/imageUpload.php'
 		};
 
 		this.set = function(key, value) {
@@ -2314,429 +3026,6 @@ angular.module('kityminderEditor')
 				}
 
 			};
-		}
-	});
-angular.module('kityminderEditor')
-	.service('lang.zh-cn', function() {
-		return {
-			'zh-cn': {
-				'template': {
-					'default': '思维导图',
-					'tianpan': '天盘图',
-					'structure': '组织结构图',
-					'filetree': '目录组织图',
-					'right': '逻辑结构图',
-					'fish-bone': '鱼骨头图'
-				},
-				'theme': {
-					'classic': '脑图经典',
-					'classic-compact': '紧凑经典',
-					'snow': '温柔冷光',
-					'snow-compact': '紧凑冷光',
-					'fish': '鱼骨图',
-					'wire': '线框',
-					'fresh-red': '清新红',
-					'fresh-soil': '泥土黄',
-					'fresh-green': '文艺绿',
-					'fresh-blue': '天空蓝',
-					'fresh-purple': '浪漫紫',
-					'fresh-pink': '脑残粉',
-					'fresh-red-compat': '紧凑红',
-					'fresh-soil-compat': '紧凑黄',
-					'fresh-green-compat': '紧凑绿',
-					'fresh-blue-compat': '紧凑蓝',
-					'fresh-purple-compat': '紧凑紫',
-					'fresh-pink-compat': '紧凑粉',
-					'tianpan':'经典天盘',
-					'tianpan-compact': '紧凑天盘'
-				},
-				'maintopic': '中心主题',
-				'topic': '分支主题',
-				'panels': {
-					'history': '历史',
-					'template': '模板',
-					'theme': '皮肤',
-					'layout': '布局',
-					'style': '样式',
-					'font': '文字',
-					'color': '颜色',
-					'background': '背景',
-					'insert': '插入',
-					'arrange': '调整',
-					'nodeop': '当前',
-					'priority': '优先级',
-					'progress': '进度',
-					'resource': '资源',
-					'note': '备注',
-					'attachment': '附件',
-					'word': '文字'
-				},
-				'error_message': {
-					'title': '哎呀，脑图出错了',
-
-					'err_load': '加载脑图失败',
-					'err_save': '保存脑图失败',
-					'err_network': '网络错误',
-					'err_doc_resolve': '文档解析失败',
-					'err_unknown': '发生了奇怪的错误',
-					'err_localfile_read': '文件读取错误',
-					'err_download': '文件下载失败',
-					'err_remove_share': '取消分享失败',
-					'err_create_share': '分享失败',
-					'err_mkdir': '目录创建失败',
-					'err_ls': '读取目录失败',
-					'err_share_data': '加载分享内容出错',
-					'err_share_sync_fail': '分享内容同步失败',
-					'err_move_file': '文件移动失败',
-					'err_rename': '重命名失败',
-
-					'unknownreason': '可能是外星人篡改了代码...',
-					'pcs_code': {
-						3: "不支持此接口",
-						4: "没有权限执行此操作",
-						5: "IP未授权",
-						110: "用户会话已过期，请重新登录",
-						31001: "数据库查询错误",
-						31002: "数据库连接错误",
-						31003: "数据库返回空结果",
-						31021: "网络错误",
-						31022: "暂时无法连接服务器",
-						31023: "输入参数错误",
-						31024: "app id为空",
-						31025: "后端存储错误",
-						31041: "用户的cookie不是合法的百度cookie",
-						31042: "用户未登陆",
-						31043: "用户未激活",
-						31044: "用户未授权",
-						31045: "用户不存在",
-						31046: "用户已经存在",
-						31061: "文件已经存在",
-						31062: "文件名非法",
-						31063: "文件父目录不存在",
-						31064: "无权访问此文件",
-						31065: "目录已满",
-						31066: "文件不存在",
-						31067: "文件处理出错",
-						31068: "文件创建失败",
-						31069: "文件拷贝失败",
-						31070: "文件删除失败",
-						31071: "不能读取文件元信息",
-						31072: "文件移动失败",
-						31073: "文件重命名失败",
-						31079: "未找到文件MD5，请使用上传API上传整个文件。",
-						31081: "superfile创建失败",
-						31082: "superfile 块列表为空",
-						31083: "superfile 更新失败",
-						31101: "tag系统内部错误",
-						31102: "tag参数错误",
-						31103: "tag系统错误",
-						31110: "未授权设置此目录配额",
-						31111: "配额管理只支持两级目录",
-						31112: "超出配额",
-						31113: "配额不能超出目录祖先的配额",
-						31114: "配额不能比子目录配额小",
-						31141: "请求缩略图服务失败",
-						31201: "签名错误",
-						31202: "文件不存在",
-						31203: "设置acl失败",
-						31204: "请求acl验证失败",
-						31205: "获取acl失败",
-						31206: "acl不存在",
-						31207: "bucket已存在",
-						31208: "用户请求错误",
-						31209: "服务器错误",
-						31210: "服务器不支持",
-						31211: "禁止访问",
-						31212: "服务不可用",
-						31213: "重试出错",
-						31214: "上传文件data失败",
-						31215: "上传文件meta失败",
-						31216: "下载文件data失败",
-						31217: "下载文件meta失败",
-						31218: "容量超出限额",
-						31219: "请求数超出限额",
-						31220: "流量超出限额",
-						31298: "服务器返回值KEY非法",
-						31299: "服务器返回值KEY不存在"
-					}
-				},
-				'ui': {
-					'shared_file_title': '[分享的] {0} (只读)',
-					'load_share_for_edit': '正在加载分享的文件...',
-					'share_sync_success': '分享内容已同步',
-					'recycle_clear_confirm': '确认清空回收站么？清空后的文件无法恢复。',
-
-					'fullscreen_exit_hint': '按 Esc 或 F11 退出全屏',
-
-					'error_detail': '详细信息',
-					'copy_and_feedback': '复制并反馈',
-					'move_file_confirm': '确定把 "{0}" 移动到 "{1}" 吗？',
-					'rename': '重命名',
-					'rename_success': '{0} 重命名成功',
-					'move_success': '{0} 移动成功到 {1}',
-
-					'command': {
-						'appendsiblingnode': '插入同级主题',
-                        'appendparentnode': '插入上级主题',
-						'appendchildnode': '插入下级主题',
-						'removenode': '删除',
-						'editnode': '编辑',
-						'arrangeup': '上移',
-						'arrangedown': '下移',
-						'resetlayout': '整理布局',
-						'expandtoleaf': '展开全部节点',
-						'expandtolevel1': '展开到一级节点',
-						'expandtolevel2': '展开到二级节点',
-						'expandtolevel3': '展开到三级节点',
-						'expandtolevel4': '展开到四级节点',
-						'expandtolevel5': '展开到五级节点',
-						'expandtolevel6': '展开到六级节点',
-						'fullscreen': '全屏',
-						'outline': '大纲'
-					},
-
-					'search':'搜索',
-
-					'expandtoleaf': '展开',
-
-					'back': '返回',
-
-					'undo': '撤销 (Ctrl + Z)',
-					'redo': '重做 (Ctrl + Y)',
-
-					'tabs': {
-						'idea': '思路',
-						'appearence': '外观',
-						'view': '视图'
-					},
-
-					'quickvisit': {
-						'new': '新建 (Ctrl + Alt + N)',
-						'save': '保存 (Ctrl + S)',
-						'share': '分享 (Ctrl + Alt + S)',
-						'feedback': '反馈问题（F1）',
-						'editshare': '编辑'
-					},
-
-					'menu': {
-
-						'mainmenutext': '百度脑图', // 主菜单按钮文本
-
-						'newtab': '新建',
-						'opentab': '打开',
-						'savetab': '保存',
-						'sharetab': '分享',
-						'preferencetab': '设置',
-						'helptab': '帮助',
-						'feedbacktab': '反馈',
-						'recenttab': '最近使用',
-						'netdisktab': '百度云存储',
-						'localtab': '本地文件',
-						'drafttab': '草稿箱',
-						'downloadtab': '导出到本地',
-						'createsharetab': '当前脑图',
-						'managesharetab': '已分享',
-
-						'newheader': '新建脑图',
-						'openheader': '打开',
-						'saveheader': '保存到',
-						'draftheader': '草稿箱',
-						'shareheader': '分享我的脑图',
-						'downloadheader': '导出到指定格式',
-						'preferenceheader': '偏好设置',
-						'helpheader': '帮助',
-						'feedbackheader': '反馈'
-					},
-
-					'mydocument': '我的文档',
-					'emptydir': '目录为空！',
-					'pickfile': '选择文件...',
-					'acceptfile': '支持的格式：{0}',
-					'dropfile': '或将文件拖至此处',
-					'unsupportedfile': '不支持的文件格式',
-					'untitleddoc': '未命名文档',
-					'overrideconfirm': '{0} 已存在，确认覆盖吗？',
-					'checklogin': '检查登录状态中...',
-					'loggingin': '正在登录...',
-					'recent': '最近打开',
-					'clearrecent': '清空',
-					'clearrecentconfirm': '确认清空最近文档列表？',
-					'cleardraft': '清空',
-					'cleardraftconfirm': '确认清空草稿箱？',
-
-					'none_share': '不分享',
-					'public_share': '公开分享',
-					'password_share': '私密分享',
-					'email_share': '邮件邀请',
-					'url_share': '脑图 URL 地址：',
-					'sns_share': '社交网络分享：',
-					'sns_share_text': '“{0}” - 我用百度脑图制作的思维导图，快看看吧！（地址：{1}）',
-					'none_share_description': '不分享当前脑图',
-					'public_share_description': '创建任何人可见的分享',
-					'share_button_text': '创建',
-					'password_share_description': '创建需要密码才可见的分享',
-					'email_share_description': '创建指定人可见的分享，您还可以允许他们编辑',
-					'ondev': '敬请期待！',
-					'create_share_failed': '分享失败：{0}',
-					'remove_share_failed': '删除失败：{1}',
-					'copy': '复制',
-					'copied': '已复制',
-					'shared_tip': '当前脑图被 {0}  分享，你可以修改之后保存到自己的网盘上或再次分享',
-					'current_share': '当前脑图',
-					'manage_share': '我的分享',
-					'share_remove_action': '不分享该脑图',
-					'share_view_action': '打开分享地址',
-					'share_edit_action': '编辑分享的文件',
-
-					'login': '登录',
-					'logout': '注销',
-					'switchuser': '切换账户',
-					'userinfo': '个人信息',
-					'gotonetdisk': '我的网盘',
-					'requirelogin': '请 <a class="login-button">登录</a> 后使用',
-					'saveas': '保存为',
-					'filename': '文件名',
-					'fileformat': '保存格式',
-					'save': '保存',
-					'mkdir': '新建目录',
-					'recycle': '回收站',
-					'newdir': '未命名目录',
-
-					'bold': '加粗',
-					'italic': '斜体',
-					'forecolor': '字体颜色',
-					'fontfamily': '字体',
-					'fontsize': '字号',
-					'layoutstyle': '主题',
-					'node': '节点操作',
-					'saveto': '另存为',
-					'hand': '允许拖拽',
-					'camera': '定位根节点',
-					'zoom-in': '放大（Ctrl+）',
-					'zoom-out': '缩小（Ctrl-）',
-					'markers': '标签',
-					'resource': '资源',
-					'help': '帮助',
-					'preference': '偏好设置',
-					'expandnode': '展开到叶子',
-					'collapsenode': '收起到一级节点',
-					'template': '模板',
-					'theme': '皮肤',
-					'clearstyle': '清除样式',
-					'copystyle': '复制样式',
-					'pastestyle': '粘贴样式',
-					'appendsiblingnode': '同级主题',
-					'appendchildnode': '下级主题',
-					'arrangeup': '前调',
-					'arrangedown': '后调',
-					'editnode': '编辑',
-					'removenode': '移除',
-					'priority': '优先级',
-					'progress': {
-						'p1': '未开始',
-						'p2': '完成 1/8',
-						'p3': '完成 1/4',
-						'p4': '完成 3/8',
-						'p5': '完成一半',
-						'p6': '完成 5/8',
-						'p7': '完成 3/4',
-						'p8': '完成 7/8',
-						'p9': '已完成',
-						'p0': '清除进度'
-					},
-					'link': '链接',
-					'image': '图片',
-					'note': '备注',
-                    'insertlink': '插入链接',
-                    'insertimage': '插入图片',
-                    'insertnote': '插入备注',
-					'removelink': '移除已有链接',
-					'removeimage': '移除已有图片',
-					'removenote': '移除已有备注',
-					'resetlayout': '整理',
-
-					'justnow': '刚刚',
-					'minutesago': '{0} 分钟前',
-					'hoursago': '{0} 小时前',
-					'yesterday': '昨天',
-					'daysago': '{0} 天前',
-					'longago': '很久之前',
-
-					'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？',
-					'navigator': '导航器',
-
-					'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n虽然未保存的数据会缓存在草稿箱，但是清除浏览器缓存会导致草稿箱清除。',
-
-					'shortcuts': '快捷键',
-					'contact': '联系与反馈',
-					'email': '邮件组',
-					'qq_group': 'QQ 群',
-					'github_issue': 'Github',
-					'baidu_tieba': '贴吧',
-
-					'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制',
-
-					'load_success': '{0} 加载成功',
-					'save_success': '{0} 已保存于 {1}',
-					'autosave_success': '{0} 已自动保存于 {1}',
-
-					'selectall': '全选',
-					'selectrevert': '反选',
-					'selectsiblings': '选择兄弟节点',
-					'selectlevel': '选择同级节点',
-					'selectpath': '选择路径',
-					'selecttree': '选择子树'
-				},
-				'popupcolor': {
-					'clearColor': '清空颜色',
-					'standardColor': '标准颜色',
-					'themeColor': '主题颜色'
-				},
-				'dialogs': {
-					'markers': {
-						'static': {
-							'lang_input_text': '文本内容：',
-							'lang_input_url': '链接地址：',
-							'lang_input_title': '标题：',
-							'lang_input_target': '是否在新窗口：'
-						},
-						'priority': '优先级',
-						'none': '无',
-						'progress': {
-							'title': '进度',
-							'notdone': '未完成',
-							'done1': '完成 1/8',
-							'done2': '完成 1/4',
-							'done3': '完成 3/8',
-							'done4': '完成 1/2',
-							'done5': '完成 5/8',
-							'done6': '完成 3/4',
-							'done7': '完成 7/8',
-							'done': '已完成'
-						}
-					},
-					'help': {
-
-					},
-					'hyperlink': {},
-					'image': {},
-					'resource': {}
-				},
-				'hyperlink': {
-					'hyperlink': '链接...',
-					'unhyperlink': '移除链接'
-				},
-				'image': {
-					'image': '图片...',
-					'removeimage': '移除图片'
-				},
-				'marker': {
-					'marker': '进度/优先级...'
-				},
-				'resource': {
-					'resource': '资源...'
-				}
-			}
 		}
 	});
 /**
@@ -2870,7 +3159,7 @@ angular.module('kityminderEditor')
         }
     };
 }])
-angular.module('kityminderEditor').service('revokeDialog', ['$modal', 'minder.service', function($modal, minderService) {
+angular.module('kityminderEditor').service('revokeDialog', ['$uibModal', 'minder.service', function($modal, minderService) {
 
     minderService.registerEvent(function() {
 
@@ -2952,32 +3241,6 @@ angular.module('kityminderEditor').service('revokeDialog', ['$modal', 'minder.se
 
     return {};
 }]);
-/**
- * @fileOverview
- *
- *  与后端交互的服务
- *
- * @author: zhangbobell
- * @email : zhangbobell@163.com
- *
- * @copyright: Baidu FEX, 2015
- */
-angular.module('kityminderEditor')
-    .service('server', ['config', '$http',  function(config, $http) {
-
-        return {
-            uploadImage: function(file) {
-                var url = config.get('imageUpload');
-                var fd = new FormData();
-                fd.append('upload_file', file);
-
-                return $http.post(url, fd, {
-                    transformRequest: angular.identity,
-                    headers: {'Content-Type': undefined}
-                });
-            }
-        }
-    }]);
 angular.module('kityminderEditor')
     .service('valueTransfer', function() {
         return {};
@@ -2996,24 +3259,12 @@ angular.module('kityminderEditor')
 
 
 angular.module('kityminderEditor')
-	.filter('lang', ['config', 'lang.zh-cn', function(config, lang) {
-		return function(text, block) {
-			var defaultLang = config.get('defaultLang');
-
-			if (lang[defaultLang] == undefined) {
-				return '未发现对应语言包，请检查 lang.xxx.service.js!';
-			} else {
-
-				var dict = lang[defaultLang];
-				block.split('/').forEach(function(ele, idx) {
-					dict = dict[ele];
-				});
-
-				return dict[text] || null;
-			}
-
-		};
-	}]);
+    .filter('lang', ['config', function(config) {
+        return function(text, block) {
+            var lang = config.get('lang');
+            return window.editor.lang.t(text, block, lang);
+        };
+    }]);
 angular.module('kityminderEditor')
     .controller('hyperlink.ctrl', ["$scope", "$modalInstance", "link", function ($scope, $modalInstance, link) {
 
@@ -3157,20 +3408,57 @@ angular.module('kityminderEditor')
 
     }]);
 angular.module('kityminderEditor')
-    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', 'server', function($http, $scope, $modalInstance, image, server) {
+    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', '$filter', function($http, $scope, $modalInstance, image, $filter) {
+        $scope.lang = $filter('lang');
 
         $scope.data = {
             list: [],
             url: image.url || '',
             title: image.title || '',
-            R_URL: /^https?\:\/\/\w+/
+            R_URL: /^(http|https|data)?\:/
         };
 
         setTimeout(function() {
             var $imageUrl = $('#image-url');
             $imageUrl.focus();
             $imageUrl[0].setSelectionRange(0, $scope.data.url.length);
+
+            // add event listener
+            document.getElementById('paste-image').addEventListener('paste', function(e) {
+
+                var cbd = e.clipboardData;
+                var ua = window.navigator.userAgent;
+
+                if ( !(e.clipboardData && e.clipboardData.items) ) return;
+                if(cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+                    cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
+                    ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) return;
+
+                for(var i = 0; i < cbd.items.length; i++) {
+                    var item = cbd.items[i];
+                    if(item.kind == "file"){
+                        var blob = item.getAsFile();
+                        if (blob.size === 0) {
+                            return;
+                        }
+                        
+                        var fr = new FileReader();
+                        fr.onload = function (e) {
+                            $scope.data.url = e.target.result ; 
+                            $scope.$apply();
+                        }
+                        fr.readAsDataURL(blob);                          
+                    }
+                }
+            });
+
         }, 300);
+
+        $modalInstance.rendered.then(function () {
+            $('#upload-image').change(function(){
+                $scope.uploadImage();
+            });
+        });
 
 
         // 搜索图片按钮点击事件
@@ -3216,14 +3504,14 @@ angular.module('kityminderEditor')
             }
             if (/^.*\.(jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG)$/.test(fileInput.val())) {
                 var file = fileInput[0].files[0];
-                return server.uploadImage(file).then(function (json) {
-                    var resp = json.data;
-                    if (resp.errno === 0) {
-                        $scope.data.url = resp.data.url;
-                    }
-                });
+                var reader=new FileReader();
+                reader.onload = function() {
+                    $scope.data.url = this.result;
+                    $scope.$apply();
+                };
+                reader.readAsDataURL(file);
             } else {
-                alert("后缀只能是 jpg、gif 及 png");
+                alert(lang('formatinfo', 'ui/dialog/image'));
             }
         };
 
@@ -3270,6 +3558,7 @@ angular.module('kityminderEditor')
             return $http.jsonp(url);
         }
     }]);
+
 angular.module('kityminderEditor')
     .directive('appendNode', ['commandBinder', function(commandBinder) {
         return {
@@ -3366,7 +3655,7 @@ angular.module('kityminderEditor')
         }
     });
 angular.module('kityminderEditor')
-	.directive('fontOperator', function() {
+	.directive('fontOperator', ['$filter', function($filter) {
 		return {
 			restrict: 'E',
 			templateUrl: 'ui/directive/fontOperator/fontOperator.html',
@@ -3434,6 +3723,8 @@ angular.module('kityminderEditor')
 
                 scope.foreColor = scope.setDefaultColor() || '#000';
 
+                scope.lang = $filter('lang');
+
                 scope.getFontfamilyName = function(val) {
                     var fontName = '';
                     scope.fontFamilyList.forEach(function(ele, idx, arr) {
@@ -3447,9 +3738,9 @@ angular.module('kityminderEditor')
                 }
 			}
 		}
-	});
+	}]);
 angular.module('kityminderEditor')
-    .directive('hyperLink', ['$modal', function($modal) {
+    .directive('hyperLink', ['$uibModal', function($modal) {
         return {
             restrict: 'E',
             templateUrl: 'ui/directive/hyperLink/hyperLink.html',
@@ -3484,7 +3775,7 @@ angular.module('kityminderEditor')
         }
     }]);
 angular.module('kityminderEditor')
-    .directive('imageBtn', ['$modal', function($modal) {
+    .directive('imageBtn', ['$uibModal', function($modal) {
         return {
             restrict: 'E',
             templateUrl: 'ui/directive/imageBtn/imageBtn.html',
@@ -3548,8 +3839,9 @@ angular.module('kityminderEditor')
 
 					define('demo', function(require) {
 						var Editor = require('editor');
+						var lang = config.get('lang');
 
-						var editor = window.editor = new Editor($minderEditor);
+						var editor = window.editor = new Editor($minderEditor, lang);
 
 						if (window.localStorage.__dev_minder_content) {
 							editor.minder.importJson(JSON.parse(window.localStorage.__dev_minder_content));
@@ -3574,7 +3866,8 @@ angular.module('kityminderEditor')
 					seajs.use('demo');
 
 				} else if (window.kityminder && window.kityminder.Editor) {
-					var editor = new kityminder.Editor($minderEditor);
+                    var lang = config.get('lang');
+					var editor = new kityminder.Editor($minderEditor, lang);
 
 					window.editor = scope.editor = editor;
 					window.minder = scope.minder = editor.minder;

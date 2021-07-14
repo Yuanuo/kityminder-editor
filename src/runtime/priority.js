@@ -3,12 +3,13 @@ define(function(require, exports, module){
     function PriorityRuntime() {
         var minder = this.minder;
         var hotbox = this.hotbox;
+        var lang = this.lang.t;
 
         var main = hotbox.state('main');
 
         main.button({
             position: 'top',
-            label: '优先级',
+            label: lang('main', 'runtime/priority'),
             key: 'P',
             next: 'priority',
             enable: function() {
@@ -30,7 +31,7 @@ define(function(require, exports, module){
 
         priority.button({
             position: 'center',
-            label: '移除',
+            label: lang('remove', 'runtime/priority'),
             key: 'Del',
             action: function() {
                 minder.execCommand('Priority', 0);
@@ -39,7 +40,7 @@ define(function(require, exports, module){
 
         priority.button({
             position: 'top',
-            label: '返回',
+            label: lang('esc', 'runtime/priority'),
             key: 'esc',
             next: 'back'
         });

@@ -57,7 +57,8 @@ module.exports = function(grunt) {
             merge: {
                 files: [{
                     src: [
-                        'src/**/*.js'
+                        'src/**/*.js',
+						'l10n/*.js'
                     ],
                     dest: '.tmp/scripts/kityminder.editor.logic.js'
                 }]

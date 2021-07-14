@@ -28,8 +28,9 @@ angular.module('kityminderEditor')
 
 					define('demo', function(require) {
 						var Editor = require('editor');
+						var lang = config.get('lang');
 
-						var editor = window.editor = new Editor($minderEditor);
+						var editor = window.editor = new Editor($minderEditor, lang);
 
 						if (window.localStorage.__dev_minder_content) {
 							editor.minder.importJson(JSON.parse(window.localStorage.__dev_minder_content));
@@ -54,7 +55,8 @@ angular.module('kityminderEditor')
 					seajs.use('demo');
 
 				} else if (window.kityminder && window.kityminder.Editor) {
-					var editor = new kityminder.Editor($minderEditor);
+                    var lang = config.get('lang');
+					var editor = new kityminder.Editor($minderEditor, lang);
 
 					window.editor = scope.editor = editor;
 					window.minder = scope.minder = editor.minder;

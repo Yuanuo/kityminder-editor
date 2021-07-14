@@ -1,5 +1,5 @@
 angular.module('kityminderEditor')
-    .directive('imageBtn', ['$modal', function($modal) {
+    .directive('imageBtn', ['$uibModal', function($modal) {
         return {
             restrict: 'E',
             templateUrl: 'ui/directive/imageBtn/imageBtn.html',

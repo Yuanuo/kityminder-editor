@@ -1,5 +1,5 @@
 angular.module('kityminderEditor')
-    .directive('hyperLink', ['$modal', function($modal) {
+    .directive('hyperLink', ['$uibModal', function($modal) {
         return {
             restrict: 'E',
             templateUrl: 'ui/directive/hyperLink/hyperLink.html',
