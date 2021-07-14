@@ -31,22 +31,6 @@ Their differences and connections are as follows:
 
 ## Features
 
-<<<<<<< .mine
-## 开发使用
-根目录下的 `index.html` 为开发环境，`dist` 目录下的 `index.html` 使用打包好的代码，适用于线上环境。
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 - Basic operations: text editing, node folding, inserting, deleting, sorting,
   inducting, copying, cutting, pasting, etc.
 - Style control: font, bold, italic, color, style copy, style paste, etc.
@@ -61,20 +45,12 @@ Their differences and connections are as follows:
 - Data import and export: support import of multiple formats, export of
   multiple formats (including images)
 - Thumbnail: Support for thumbnail viewing/navigation
->>>>>>> .theirs
 
-<<<<<<< .mine
-1. 安装 [nodejs](http://nodejs.org) 和 [npm](https://docs.npmjs.com/getting-started/installing-node)
-2. 初始化：切到 kityminder-editor 根目录下运行 `npm run init`
-3. 在 kityminder-editor 根目录下运行 `grunt dev` 即可启动项目
-4. 你可以基于根目录的 `index.html` 开发，或者查看 `dist` 目录下用于生产环境的 `index.html`，Enjoy it!
-=======
 ## Development and Use
 
 The `index.html` in the root directory is the development environment, and the
 `index.html` in the `dist` directory uses the packaged code for the online
 environment.
->>>>>>> .theirs
 
 1. Install [nodejs](http://nodejs.org) and [npm](https://docs.npmjs.com/getting-started/installing-node)
 2. Initialize: 
@@ -83,15 +59,6 @@ environment.
 3. You can develop based on the `index.html` in the root directory, or view the
 `index.html` for the production environment in the `dist` directory. Enjoy!
 
-<<<<<<< .mine
-## 构建
-运行 `grunt build`，完成后 `dist` 目录里就是可用运行的 kityminder-editor, 双击 `index.html` 即可打开运行示例
-
-
-
-
-
-=======
 In addition, kityminder-editor also provides a bower package for developers to
 use directly. You can use the kityminder-editor project directory.
 Run `bower install kityminder-editor`, then manually import the css and js files
@@ -99,7 +66,6 @@ that kityminder-editor depends on. See the specific file `index.html` in the
 `dist` directory, it is recommended to use the npm package
 [wireDep](https://www.npmjs.com/package/wiredep) to do it automatically.
 See the `Gruntfile.js` in the root directory.
->>>>>>> .theirs
 
 ## Construct
 Run `grunt build`. After the completion, the `dist` directory is the
@@ -152,3 +118,4 @@ Questions and suggestions feedback:
 Mail group: kity@baidu.com
 
 QQ discussion group: 475962105
+
