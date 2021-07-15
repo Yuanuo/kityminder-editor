@@ -1,7 +1,7 @@
 <div class="dropdown theme-panel" dropdown>
 	<div class="dropdown-toggle theme-item-selected"
-        dropdown-toggle
-        ng-disabled="minder.queryCommandState('theme') === -1">
+        ng-disabled="minder.queryCommandState('theme') === -1"
+		data-toggle="dropdown">
 		<a href class="theme-item"
            ng-style="getThemeThumbStyle(minder.queryCommandValue('theme'))"
            title="{{ minder.queryCommandValue('theme') | lang: 'theme'; }}" >

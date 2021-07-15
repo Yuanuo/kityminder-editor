@@ -171,10 +171,10 @@ div.minder-editor-container {
   vertical-align: middle;
 }
 .km-btn-item:hover {
-  background-color: #eff3fa;
+  background-color: hsl(222, 55%, 96%);
 }
 .km-btn-item:active {
-  background-color: #c4d0ee;
+  background-color: hsl(222, 55%, 85%);
 }
 .do-group {
   width: 38px;
@@ -360,8 +360,8 @@ div.minder-editor-container {
   -webkit-transform: translate(0, 20px);
   -ms-transform: translate(0, 20px);
   transform: translate(0, 20px);
-  -webkit-transition: all .2s ease;
-  transition: all .2s ease;
+  -webkit-transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 .search-result ul li:hover span {
   opacity: 1;
@@ -826,10 +826,10 @@ div.minder-editor-container {
   padding: 8px 1px;
 }
 .resource-editor .resource-dropdown .resource-caret:hover {
-  background-color: #eff3fa;
+  background-color: hsl(222, 55%, 96%);
 }
 .resource-editor .resource-dropdown .resource-caret:active {
-  background-color: #c4d0ee;
+  background-color: hsl(222, 55%, 85%);
 }
 .resource-editor input.form-control,
 .resource-editor .btn {
@@ -1494,13 +1494,13 @@ div a.theme-item {
   margin: 1px;
 }
 .tool-group .tool-group-item:hover {
-  background-color: #eff3fa;
+  background-color: hsl(222, 55%, 96%);
 }
 .tool-group .tool-group-item:active {
-  background-color: #c4d0ee;
+  background-color: hsl(222, 55%, 85%);
 }
 .tool-group .tool-group-item.active {
-  background-color: #c4d0ee;
+  background-color: hsl(222, 55%, 85%);
 }
 .nav-bar {
   position: absolute;
@@ -1515,7 +1515,7 @@ div a.theme-item {
   z-index: 10;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
   transition: -webkit-transform 0.7s 0.1s ease;
-  transition: transform .7s 0.1s ease;
+  transition: transform 0.7s 0.1s ease;
 }
 .nav-bar .nav-btn {
   width: 35px;
@@ -1611,7 +1611,7 @@ div a.theme-item {
   z-index: 9;
   cursor: crosshair;
   transition: -webkit-transform 0.7s 0.1s ease;
-  transition: transform .7s 0.1s ease;
+  transition: transform 0.7s 0.1s ease;
 }
 .nav-previewer.grab {
   cursor: move;
