@@ -32,19 +32,18 @@
     "package.json"
   ],
   "devDependencies": {
-    "seajs": "https://ghproxy.com/https://github.com/seajs/seajs/archive/refs/heads/master.zip",
-    "codemirror": "https://ghproxy.com/https://github.com/components/codemirror/archive/refs/tags/5.61.1.zip",
-    "jquery": "https://ghproxy.com/https://github.com/jquery/jquery-dist/archive/refs/tags/3.6.0.zip"
+    "seajs": "seajs#master"
   },
   "dependencies": {
-    "bootstrap": "https://ghproxy.com/https://github.com/twbs/bootstrap/archive/refs/tags/v3.4.1.tar.gz",
-    "angular": "https://ghproxy.com/https://github.com/angular/bower-angular/archive/refs/tags/v1.8.2.zip",
-    "angular-bootstrap": "https://ghproxy.com/https://github.com/angular-ui/bootstrap-bower/archive/refs/tags/2.5.0.zip",
-    "angular-ui-codemirror": "https://ghproxy.com/https://github.com/angular-ui/ui-codemirror/archive/refs/tags/v0.3.0.zip",
-    "marked": "https://ghproxy.com/https://github.com/markedjs/marked/archive/refs/tags/v2.1.3.zip",
-    "hotbox": "https://ghproxy.com/https://github.com/fex-team/hotbox/archive/refs/tags/v1.0.15.zip",
-    "color-picker": "https://ghproxy.com/https://github.com/zhangbobell/color-picker/archive/refs/tags/v1.0.9.zip",
-    "js-base64": "https://ghproxy.com/https://github.com/dankogai/js-base64/archive/refs/tags/3.6.1.zip"
+    "jquery": "^3.6.0",
+    "angular": "^1.8.2",
+    "bootstrap": "^3.4.1",
+    "angular-bootstrap": "^2.5.0",
+    "codemirror": "^5.61.1",
+    "angular-ui-codemirror": "^0.3.0",
+    "marked": "^2.1.3",
+    "hotbox": "^1.0.15",
+    "color-picker": "^1.0.9"
   },
   "overrides": {
     "codemirror": {
