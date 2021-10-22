@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KityMinder Editor - Powered By FEX</title>
 
     <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
 
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="bower_components/hotbox/hotbox.css" />
-    <link rel="stylesheet" href="node_modules/kityminder-core/dist/kityminder.core.css" />
     <link rel="stylesheet" href="bower_components/color-picker/dist/color-picker.css" />
     <!-- endbower -->
 
+    <link rel="stylesheet" href="node_modules/kityminder-core/dist/kityminder.core.css" />
     <link rel="stylesheet" href="dist/kityminder.editor.css">
 
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -25,14 +28,15 @@
         }
     </style>
 </head>
+
 <body ng-app="kityminderDemo" ng-controller="MainController">
-<kityminder-editor on-init="initEditor(editor, minder)"></kityminder-editor>
+    <kityminder-editor on-init="initEditor(editor, minder)"></kityminder-editor>
 </body>
 
 <!-- bower:js -->
-<script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/codemirror/lib/codemirror.js"></script>
 <script src="bower_components/codemirror/mode/xml/xml.js"></script>
@@ -42,15 +46,15 @@
 <script src="bower_components/codemirror/mode/markdown/markdown.js"></script>
 <script src="bower_components/codemirror/addon/mode/overlay.js"></script>
 <script src="bower_components/codemirror/mode/gfm/gfm.js"></script>
-<script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
-<script src="bower_components/marked/lib/marked.js"></script>
-<script src="bower_components/hotbox/hotbox.js"></script>
-<script src="bower_components/color-picker/dist/color-picker.js"></script>
-<script src="node_modules/kity/dist/kity.js"></script>
-<script src="node_modules/kityminder-core/dist/kityminder.core.js"></script>
+<script src="bower_components/angular-ui-codemirror/ui-codemirror.min.js"></script>
+<script src="bower_components/marked/marked.min.js"></script>
+<script src="bower_components/hotbox/hotbox.min.js"></script>
+<script src="bower_components/color-picker/dist/color-picker.min.js"></script>
 <script src="bower_components/seajs/dist/sea.js"></script>
 <!-- endbower -->
 
+<script src="node_modules/kity/dist/kity.min.js"></script>
+<script src="node_modules/kityminder-core/dist/kityminder.core.min.js"></script>
 <script src="ui/kityminder.app.js"></script>
 <script src="ui/service/commandBinder.service.js"></script>
 <script src="ui/service/config.service.js"></script>
@@ -95,8 +99,8 @@
         .config(function (configProvider) {
             configProvider.set('lang', 'en');
         })
-        .controller('MainController', function($scope) {
-            $scope.initEditor = function(editor, minder) {
+        .controller('MainController', function ($scope) {
+            $scope.initEditor = function (editor, minder) {
                 window.editor = editor;
                 window.minder = minder;
             };

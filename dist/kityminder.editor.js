@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder-editor - v1.0.67 - 2021-07-16
+ * kityminder-editor - v21.8.18 - 2021-08-18
  * https://github.com/fex-team/kityminder-editor
  * GitHub: https://github.com/fex-team/kityminder-editor 
  * Copyright (c) 2021 ; Licensed 
@@ -48,6 +48,7 @@ _p[0] = {
             runtimes.push(runtime);
         }
         function KMEditor(selector, defaultLang) {
+            this.version = "21.8.18";
             this.selector = selector;
             this.lang = _p.r(3);
             if (defaultLang !== undefined) {
@@ -3838,7 +3839,7 @@ angular.module('kityminderEditor').run(['$templateCache', function($templateCach
 
 
   $templateCache.put('ui/directive/topTab/topTab.html',
-    "<uib-tabset><uib-tab active=\"true\" heading=\"{{ 'idea' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('idea')\" select=\"setCurTab('idea')\"><undo-redo editor=\"editor\"></undo-redo><append-node minder=\"minder\"></append-node><arrange minder=\"minder\"></arrange><operation minder=\"minder\"></operation><hyper-link minder=\"minder\"></hyper-link><image-btn minder=\"minder\"></image-btn><note-btn minder=\"minder\"></note-btn><priority-editor minder=\"minder\"></priority-editor><progress-editor minder=\"minder\"></progress-editor><resource-editor minder=\"minder\"></resource-editor></uib-tab><uib-tab heading=\"{{ 'appearence' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('appearance')\" select=\"setCurTab('appearance')\"><template-list minder=\"minder\" class=\"inline-directive\"></template-list><theme-list minder=\"minder\"></theme-list><layout minder=\"minder\" class=\"inline-directive\"></layout><style-operator minder=\"minder\" class=\"inline-directive\"></style-operator><font-operator minder=\"minder\" class=\"inline-directive\"></font-operator></uib-tab><uib-tab heading=\"{{ 'view' | lang: 'ui/tabs'; }}\" ng-click=\"toggleTopTab('view')\" select=\"setCurTab('view')\"><expand-level minder=\"minder\"></expand-level><select-all minder=\"minder\"></select-all><search-btn minder=\"minder\"></search-btn></uib-tab></uib-tabset>"
+    "<uib-tabset><uib-tab heading=\"{{ 'idea' | lang: 'ui/tabs'; }}\" ng-click=\"selectTopTab('idea')\"><undo-redo editor=\"editor\"></undo-redo><append-node minder=\"minder\"></append-node><arrange minder=\"minder\"></arrange><operation minder=\"minder\"></operation><hyper-link minder=\"minder\"></hyper-link><image-btn minder=\"minder\"></image-btn><note-btn minder=\"minder\"></note-btn><priority-editor minder=\"minder\"></priority-editor><progress-editor minder=\"minder\"></progress-editor><resource-editor minder=\"minder\"></resource-editor></uib-tab><uib-tab heading=\"{{ 'appearence' | lang: 'ui/tabs'; }}\" ng-click=\"selectTopTab('appearance')\"><template-list minder=\"minder\" class=\"inline-directive\"></template-list><theme-list minder=\"minder\"></theme-list><layout minder=\"minder\" class=\"inline-directive\"></layout><style-operator minder=\"minder\" class=\"inline-directive\"></style-operator><font-operator minder=\"minder\" class=\"inline-directive\"></font-operator></uib-tab><uib-tab heading=\"{{ 'view' | lang: 'ui/tabs'; }}\" ng-click=\"selectTopTab('view')\"><expand-level minder=\"minder\"></expand-level><select-all minder=\"minder\"></select-all><search-btn minder=\"minder\"></search-btn></uib-tab></uib-tabset>"
   );
 
 
@@ -4180,7 +4181,7 @@ angular.module('kityminderEditor')
         };
     }]);
 angular.module('kityminderEditor')
-    .controller('hyperlink.ctrl', ["$scope", "$modalInstance", "link", function ($scope, $modalInstance, link) {
+    .controller('hyperlink.ctrl', ["$scope", "$uibModalInstance", "link", function ($scope, $uibModalInstance, link) {
 
         var urlRegex = '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
         $scope.R_URL = new RegExp(urlRegex, 'i');
@@ -4206,7 +4207,7 @@ angular.module('kityminderEditor')
 
         $scope.ok = function () {
             if($scope.R_URL.test($scope.url)) {
-                $modalInstance.close({
+                $uibModalInstance.close({
                     url: $scope.url,
                     title: $scope.title
                 });
@@ -4221,13 +4222,13 @@ angular.module('kityminderEditor')
         };
 
         $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
             editor.receiver.selectAll();
         };
 
     }]);
 angular.module('kityminderEditor')
-    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', '$filter', function($http, $scope, $modalInstance, image, $filter) {
+    .controller('image.ctrl', ['$http', '$scope', '$uibModalInstance', 'image', '$filter', function($http, $scope, $uibModalInstance, image, $filter) {
         $scope.lang = $filter('lang');
 
         $scope.data = {
@@ -4273,7 +4274,7 @@ angular.module('kityminderEditor')
 
         }, 300);
 
-        $modalInstance.rendered.then(function () {
+        $uibModalInstance.rendered.then(function () {
             $('#upload-image').change(function(){
                 $scope.uploadImage();
             });
@@ -4346,7 +4347,7 @@ angular.module('kityminderEditor')
 
         $scope.ok = function () {
             if($scope.data.R_URL.test($scope.data.url)) {
-                $modalInstance.close({
+                $uibModalInstance.close({
                     url: $scope.data.url,
                     title: $scope.data.title
                 });
@@ -4365,7 +4366,7 @@ angular.module('kityminderEditor')
         };
 
         $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
             editor.receiver.selectAll();
         };
 
@@ -4379,7 +4380,7 @@ angular.module('kityminderEditor')
     }]);
 
 angular.module('kityminderEditor')
-    .controller('imExportNode.ctrl', ["$scope", "$modalInstance", "title", "defaultValue", "type", function ($scope, $modalInstance, title, defaultValue, type) {
+    .controller('imExportNode.ctrl', ["$scope", "$uibModalInstance", "title", "defaultValue", "type", function ($scope, $uibModalInstance, title, defaultValue, type) {
 
         $scope.title = title;
 
@@ -4391,12 +4392,12 @@ angular.module('kityminderEditor')
             if ($scope.value == '') {
                 return;
             }
-            $modalInstance.close($scope.value);
+            $uibModalInstance.close($scope.value);
             editor.receiver.selectAll();
         };
 
         $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
             editor.receiver.selectAll();
         };
 
@@ -5773,85 +5774,43 @@ angular.module('kityminderEditor')
 		}
 	});
 angular.module('kityminderEditor')
-    .directive('topTab', function() {
-       return {
-           restrict: 'A',
-           templateUrl: 'ui/directive/topTab/topTab.html',
-           scope: {
-               minder: '=topTab',
-               editor: '='
-           },
-           link: function(scope) {
+    .directive('topTab', function () {
+        return {
+            restrict: 'A',
+            templateUrl: 'ui/directive/topTab/topTab.html',
+            scope: {
+                minder: '=topTab',
+                editor: '='
+            },
+            link: function (scope) {
 
-               /*
-               *
-               * 用户选择一个新的选项卡会执行 setCurTab 和 foldTopTab 两个函数
-               * 用户点击原来的选项卡会执行 foldTopTop 一个函数
-               *
-               * 也就是每次选择新的选项卡都会执行 setCurTab，初始化的时候也会执行 setCurTab 函数
-               * 因此用 executedCurTab 记录是否已经执行了 setCurTab 函数
-               * 用 isInit 记录是否是初始化的状态，在任意一个函数时候 isInit 设置为 false
-               * 用 isOpen 记录是否打开了 topTab
-               *
-               * 因此用到了三个 mutex
-               * */
-               var executedCurTab = false;
-               var isInit = true;
-               var isOpen = true;
+                var selectedTab = 'idea';
+                scope.selectTopTab = function (tab) {
+                    if (selectedTab === tab) {
+                        $('.tab-content').animate({
+                            height: 0,
+                            display: 'none'
+                        });
+                        $('.minder-editor').animate({
+                            top: '32px'
+                        });
 
-               scope.setCurTab = function(tabName) {
-                   setTimeout(function() {
-                       //console.log('set cur tab to : ' + tabName);
-                       executedCurTab = true;
-                       //isOpen = false;
-                       if (tabName != 'idea') {
-                           isInit = false;
-                       }
-                   });
+                        return selectedTab = null;
+                    }
+                    if (selectedTab === null) {
+                        $('.tab-content').animate({
+                            height: '60px',
+                            display: 'block'
+                        });
+                        $('.minder-editor').animate({
+                            top: '92px'
+                        });
+                    }
+
+                    selectedTab = tab;
                 };
-
-               scope.toggleTopTab = function() {
-                   setTimeout(function() {
-                       if(!executedCurTab || isInit) {
-                           isInit = false;
-
-                           isOpen ? closeTopTab(): openTopTab();
-                           isOpen = !isOpen;
-                       }
-
-                       executedCurTab = false;
-                   });
-               };
-
-               function closeTopTab() {
-                   var $tabContent = $('.tab-content');
-                   var $minderEditor = $('.minder-editor');
-
-                   $tabContent.animate({
-                       height: 0,
-                       display: 'none'
-                   });
-
-                   $minderEditor.animate({
-                      top: '32px'
-                   });
-               }
-
-               function openTopTab() {
-                   var $tabContent = $('.tab-content');
-                   var $minderEditor = $('.minder-editor');
-
-                   $tabContent.animate({
-                       height: '60px',
-                       display: 'block'
-                   });
-
-                   $minderEditor.animate({
-                       top: '92px'
-                   });
-               }
-           }
-       }
+            }
+        }
     });
 angular.module('kityminderEditor')
     .directive('undoRedo', function() {

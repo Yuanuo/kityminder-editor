@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define(function (require, exports, module) {
 
     /**
      * 运行时
@@ -10,6 +10,7 @@ define(function(require, exports, module) {
     }
 
     function KMEditor(selector, defaultLang) {
+        this.version = '21.8.18';
         this.selector = selector;
         this.lang = require('./lang');
         if (defaultLang !== undefined) {

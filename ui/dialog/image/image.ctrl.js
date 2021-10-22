@@ -1,5 +1,5 @@
 angular.module('kityminderEditor')
-    .controller('image.ctrl', ['$http', '$scope', '$modalInstance', 'image', '$filter', function($http, $scope, $modalInstance, image, $filter) {
+    .controller('image.ctrl', ['$http', '$scope', '$uibModalInstance', 'image', '$filter', function($http, $scope, $uibModalInstance, image, $filter) {
         $scope.lang = $filter('lang');
 
         $scope.data = {
@@ -45,7 +45,7 @@ angular.module('kityminderEditor')
 
         }, 300);
 
-        $modalInstance.rendered.then(function () {
+        $uibModalInstance.rendered.then(function () {
             $('#upload-image').change(function(){
                 $scope.uploadImage();
             });
@@ -118,7 +118,7 @@ angular.module('kityminderEditor')
 
         $scope.ok = function () {
             if($scope.data.R_URL.test($scope.data.url)) {
-                $modalInstance.close({
+                $uibModalInstance.close({
                     url: $scope.data.url,
                     title: $scope.data.title
                 });
@@ -137,7 +137,7 @@ angular.module('kityminderEditor')
         };
 
         $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
             editor.receiver.selectAll();
         };
 
