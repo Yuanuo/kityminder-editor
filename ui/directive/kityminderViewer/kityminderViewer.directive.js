@@ -21,7 +21,9 @@ angular.module('kityminderEditor')
                 }
 
                 if (window.kityminder && window.kityminder.Editor) {
-                    var editor = new kityminder.Editor($minderEditor);
+                    var lang = config.get('lang');
+					var editor = new kityminder.Editor($minderEditor, lang);
+                    editor.minder.disable();
 
                     window.editor = scope.editor = editor;
                     window.minder = scope.minder = editor.minder;
