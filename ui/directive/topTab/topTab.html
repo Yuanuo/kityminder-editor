@@ -11,14 +11,12 @@
         <progress-editor minder="minder"></progress-editor>
         <resource-editor minder="minder"></resource-editor>
     </uib-tab>
-    <uib-tab heading="{{ 'appearence' | lang: 'ui/tabs'; }}" ng-click="selectTopTab('appearance')">
+    <uib-tab heading="{{ 'view' | lang: 'ui/tabs'; }}" ng-click="selectTopTab('view')">
         <template-list minder="minder" class="inline-directive"></template-list>
         <theme-list minder="minder"></theme-list>
         <layout minder="minder" class="inline-directive"></layout>
         <style-operator minder="minder" class="inline-directive"></style-operator>
         <font-operator minder="minder" class="inline-directive"></font-operator>
-    </uib-tab>
-    <uib-tab heading="{{ 'view' | lang: 'ui/tabs'; }}" ng-click="selectTopTab('view')">
         <expand-level minder="minder"></expand-level>
         <select-all minder="minder"></select-all>
         <search-btn minder="minder"></search-btn>
