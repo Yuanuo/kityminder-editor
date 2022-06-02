@@ -17,7 +17,7 @@
         </div>
         <ul class="dropdown-menu font-list">
             <li ng-repeat="f in fontSizeList" class="font-item-wrap">
-                <a ng-click="minder.execCommand('fontsize', f)" class="font-item" ng-class="{ 'font-item-selected' : f == minder.queryCommandValue('fontsize') }" ng-style="{'font-size': f + 'px'}">{{ f }}</a>
+                <a ng-click="minder.execCommand('fontsize', f)" class="font-item" ng-class="{ 'font-item-selected' : f == minder.queryCommandValue('fontsize') }">{{ f }}</a>
             </li>
         </ul>
     </div>
