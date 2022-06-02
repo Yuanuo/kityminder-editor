@@ -10,7 +10,7 @@ define(function (require, exports, module) {
     }
 
     function KMEditor(selector, defaultLang) {
-        this.version = '21.8.18';
+        this.version = '22.06.02';
         this.selector = selector;
         this.lang = require('./lang');
         if (defaultLang !== undefined) {
