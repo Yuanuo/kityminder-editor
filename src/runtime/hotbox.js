@@ -20,6 +20,7 @@ define(function(require, exports, module) {
         hotbox.setParentFSM(fsm);
 
         fsm.when('normal -> hotbox', function(exit, enter, reason) {
+            if (minder.isDisabled()) return;
             var node = minder.getSelectedNode();
             var position;
             if (node) {
