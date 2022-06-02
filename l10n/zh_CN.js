@@ -54,8 +54,8 @@ define(function(require, exports, module) {
         'ui': {
             'command': {
                 'appendsiblingnode': '插入同级主题',
-                'appendparentnode': '插入上级主题',
-                'appendchildnode': '插入下级主题',
+                'appendparentnode': '上级',
+                'appendchildnode': '下级',
                 'removenode': '删除',
                 'editnode': '编辑',
                 'arrangeup': '上移',
